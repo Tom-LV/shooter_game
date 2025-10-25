@@ -29,10 +29,11 @@ public class Server {
     private static Thread serverThread;
 
 
-    public static void setup(int port) throws SocketException {
+    public static void start(int port) throws SocketException {
         socket = new DatagramSocket(port);
         connections = new ArrayList<>();
         serverConnectionData = new ConnectionData(socket.getInetAddress(), port, UUID.randomUUID());
+        serverConnectionData.onObjectRemoved(GameObject::onDestroy);
         startServerThread();
     }
 
@@ -56,7 +57,7 @@ public class Server {
                     if (uuidConnectionDataHashMap.containsKey(senderId)) {
                         connectionData = uuidConnectionDataHashMap.get(senderId);
                     } else {
-                        connectionData = new ConnectionData(socket.getInetAddress(), socket.getPort(), senderId);
+                        connectionData = new ConnectionData(packet.getAddress(), packet.getPort(), senderId);
                         Server.pendingNetworkActions.add(() -> {
                             Server.addNewClient(connectionData);
                         });
@@ -66,13 +67,13 @@ public class Server {
                     ArrayList<Integer> acknowledgedMessages = dataPacket.readAcknowledgedMessages();
                     connectionData.receivedPackage();
                     Server.pendingNetworkActions.add(() -> {
-                        Server.executeGameObjectUpdate(connectionData, gameObjects);
+                        connectionData.updateGameObjects(gameObjects);
                     });
                     Server.pendingNetworkActions.add(() -> {
-                        Server.executeMessages(connectionData, messages);
+                        connectionData.executeMessages(messages);
                     });
                     Server.pendingNetworkActions.add(() -> {
-                        Server.executeAcknowledgedMessages(connectionData, acknowledgedMessages);
+                        connectionData.removeAckMessages(acknowledgedMessages);
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -81,6 +82,12 @@ public class Server {
             Server.close();
         });
         serverThread.start();
+    }
+
+    public static void close() {
+        socket.close();
+        serverThread.interrupt();
+        running = false;
     }
 
     /**
@@ -101,6 +108,10 @@ public class Server {
             }
         }
 
+        for (GameObject gameObject : serverConnectionData.getConnectionObjects()) {
+            gameObject.update(deltaTime);
+        }
+
         tick += deltaTime;
         if (tick >= 0.0016) {
             sendNetworkUpdate();
@@ -116,12 +127,6 @@ public class Server {
         return running;
     }
 
-    public static void close() {
-        socket.close();
-        serverThread.interrupt();
-        running = false;
-    }
-
     public static void addNewClient(ConnectionData connection) {
         if (connections.size() >= playerCount) {
             return;
@@ -130,54 +135,12 @@ public class Server {
         uuidConnectionDataHashMap.put(connection.getUUID(), connection);
     }
 
-    public static void executeAcknowledgedMessages(ConnectionData connection, ArrayList<Integer> executedMessages) {
-        for (Integer executedMessage : executedMessages) {
-            connection.removeMessage(executedMessage);
-        }
-    }
-
-    public static void executeMessages(ConnectionData connectionData, ArrayList<NetMessage> messages) {
-        for (NetMessage message : messages) {
-            if (!connectionData.isExecuted(message.getId())) {
-                Network.onMessageReceived(message);
-                connectionData.addExecutedMessage(message.getId());
-            }
-        }
-    }
-
-    public static void executeGameObjectUpdate(ConnectionData connectionData, ArrayList<GameObject> newGameObjects) {
-        ArrayList<GameObject> clientGameObjects = connectionData.getConnectionObjects();
-        for (GameObject newClientObject : newGameObjects) {
-            boolean found = false;
-            for (GameObject clientObject : clientGameObjects) {
-                if (newClientObject.equals(clientObject)) {
-                    clientObject.updateFromOther(newClientObject);
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                continue;
-            }
-            connectionData.addObject(newClientObject);
-        }
-
-        for (int i = clientGameObjects.size() - 1; i >= 0; i--) {
-            GameObject serverObject = clientGameObjects.get(i);
-            boolean found = newGameObjects.contains(serverObject);
-
-            if (!found) {
-                clientGameObjects.remove(serverObject);
-            }
-        }
-    }
-
     /**
      * Get a list of server objects of class.
      * @param cls class of gameObject
      * @return list of gameObjects
      */
-    public synchronized List<GameObject> getServerObjectsOfClass(Class<?> cls) {
+    public static synchronized List<GameObject> getServerObjectsOfClass(Class<?> cls) {
         ArrayList<GameObject> serverObjects = serverConnectionData.getConnectionObjects();
         return serverObjects.stream()
                 .filter(o -> o.isOfClass(cls))
@@ -189,7 +152,7 @@ public class Server {
      * @param cls class of gameObject
      * @return list of gameObjects
      */
-    public synchronized List<GameObject> getClientObjectsOfClass(Class<?> cls) {
+    public static synchronized List<GameObject> getClientObjectsOfClass(Class<?> cls) {
         ArrayList<GameObject> returned = new ArrayList<>();
 
         // iterate over a snapshot of client UUIDs
@@ -210,6 +173,7 @@ public class Server {
             return;
         }
         pendingNetworkActions.add(() -> {
+            gameObject.setOwnerUUID(serverConnectionData.getUUID());
             serverConnectionData.addObject(gameObject);
         });
     }
@@ -250,5 +214,26 @@ public class Server {
             }
 
         }
+    }
+
+    /**
+     * Sends a NetMessage from the server to the client.
+     * @param type event type
+     * @param client client UUID
+     * @param args method arguments
+     * @return Generated NetMessage
+     */
+    public static void sendMessage(String type, UUID client, Object... args) {
+        if (!isRunning()) {
+            return;
+        }
+        if (Network.getIndexFromName(type) == -1) {
+            System.err.println("Event of type " + type + " not found!");
+            return;
+        }
+        pendingNetworkActions.add(() -> {
+            NetMessage msg = new NetMessage(type, args);
+            uuidConnectionDataHashMap.get(client).addMessage(msg);
+        });
     }
 }

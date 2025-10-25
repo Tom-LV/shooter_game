@@ -4,6 +4,7 @@ import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -29,13 +30,13 @@ public class EnemyManager extends GameObject {
     }
 
     private void spawnEnemy() {
-        ArrayList<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
+        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
 
         if (enemies.size() > 20) {
             return;
         }
 
-        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
+        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         if (playerObjects.size() <= 0) {
             return;

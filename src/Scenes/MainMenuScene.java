@@ -1,6 +1,7 @@
 package Scenes;
 
 import Engine.Engine;
+import Engine.Networking.Client;
 import Engine.Scene;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -131,15 +132,15 @@ public class MainMenuScene extends Scene {
                 showError("Incorrect host name.");
                 return;
             }
-            Engine.getClient().onConnected((UUID id) -> {
+            Client.onConnected(() -> {
                 statusLabel.setText(" ");
                 Engine.changeScene(new GameScene());
-                Engine.getClient().onDisconnected((UUID uid) -> {
+                Client.onDisconnected(() -> {
                     Engine.changeScene(new MainMenuScene());
                 });
             });
 
-            Engine.getClient().onFailedConnection((UUID id) -> {
+            Client.onFailedConnection(() -> {
                 showError("Couldn't join game.");
             });
         });

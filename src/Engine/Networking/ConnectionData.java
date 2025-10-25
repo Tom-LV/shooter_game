@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * A class that holds connected client data.
@@ -20,12 +21,39 @@ public class ConnectionData {
     private final ArrayList<Integer> executedMessages = new ArrayList<>();
     private final ArrayList<GameObject> connectionObjects = new ArrayList<>();
 
-    public void addExecutedMessage(Integer executedMessage) {
+    private static final ArrayList<Consumer<GameObject>> objectAddedRunnable = new ArrayList<>();
+    private static final ArrayList<Consumer<GameObject>> objectRemovedRunnable = new ArrayList<>();
+
+    public void onObjectAdded(Consumer<GameObject> consumer) {
+        objectAddedRunnable.add(consumer);
+    }
+
+    public void onObjectRemoved(Consumer<GameObject> consumer) {
+        objectRemovedRunnable.add(consumer);
+    }
+
+    private void callAdded(GameObject object) {
+        for (Consumer<GameObject> consumer: objectAddedRunnable) {
+            consumer.accept(object);
+        }
+    }
+
+    private void callRemoved(GameObject object) {
+        for (Consumer<GameObject> consumer: objectRemovedRunnable) {
+            consumer.accept(object);
+        }
+    }
+
+    private void addExecutedMessage(Integer executedMessage) {
         executedMessages.add(executedMessage);
     }
 
-    public boolean isExecuted(Integer executedMessage) {
+    private boolean isExecuted(Integer executedMessage) {
         return executedMessages.contains(executedMessage);
+    }
+
+    private void removeMessage(Integer messageId) {
+        sentMessages.removeIf((NetMessage message) -> message.getId() == messageId);
     }
 
     public ArrayList<Integer> getExecutedMessages() {
@@ -34,10 +62,6 @@ public class ConnectionData {
 
     public void addMessage(NetMessage message) {
         sentMessages.add(message);
-    }
-
-    public void removeMessage(Integer messageId) {
-        sentMessages.removeIf((NetMessage message) -> message.getId() == messageId);
     }
 
     public ArrayList<NetMessage> getSentMessages() {
@@ -51,11 +75,74 @@ public class ConnectionData {
     public void addObject(GameObject object) {
         if (!connectionObjects.contains(object)) {
             connectionObjects.add(object);
+            callAdded(object);
         }
     }
 
     public void removeObject(GameObject object) {
         connectionObjects.remove(object);
+        callRemoved(object);
+    }
+
+    public void updateGameObjects(ArrayList<GameObject> newGameObjects) {
+        ArrayList<GameObject> localObjects = getConnectionObjects();
+        for (GameObject serverObject : newGameObjects) {
+            boolean found = false;
+            for (GameObject localObject : localObjects) {
+                if (serverObject.equals(localObject)) {
+                    localObject.updateFromOther(serverObject);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                continue;
+            }
+
+            addObject(serverObject);
+        }
+
+        for (int i = localObjects.size() - 1; i >= 0; i--) {
+            GameObject serverObject = localObjects.get(i);
+            boolean found = newGameObjects.contains(serverObject);
+
+            if (!found) {
+                removeObject(serverObject);
+            }
+        }
+    }
+
+    public void executeMessages(ArrayList<NetMessage> messages) {
+        for (NetMessage message : messages) {
+            if (!isExecuted(message.getId())) {
+                Network.onMessageReceived(message);
+                addExecutedMessage(message.getId());
+            }
+        }
+        cleanUpAck(messages);
+    }
+
+    private void cleanUpAck(ArrayList<NetMessage> messages) {
+        for (int i = executedMessages.size() - 1; i >= 0; i--) {
+            int ackId = executedMessages.get(i);
+            boolean found = false;
+            for (int j = 0; j < messages.size(); j++) {
+                if (messages.get(i).getId() == ackId) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                executedMessages.remove(i);
+            }
+        }
+    }
+
+    public void removeAckMessages(ArrayList<Integer> ackMessages) {
+        for (Integer executedMessage : ackMessages) {
+            removeMessage(executedMessage);
+        }
     }
 
     /**

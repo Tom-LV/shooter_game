@@ -1,22 +1,18 @@
 package Engine;
 
 import java.io.File;
-import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.lang.reflect.Modifier;
 
-/**
- * Manage classes.
- */
 public class ClassManager {
 
-
-    private static HashMap<Integer, Class<?>> indexMap = new HashMap<>();
-    private static HashMap<Class<?>, Integer> classMap = new HashMap<>();
+    private static final HashMap<Integer, Class<?>> indexMap = new HashMap<>();
+    private static final HashMap<Class<?>, Integer> classMap = new HashMap<>();
 
     private static void registerClass(Class<?> cls) {
         int index = indexMap.size();
@@ -32,10 +28,6 @@ public class ClassManager {
         return indexMap.get(index);
     }
 
-    /**
-     * Registers class from base package for serialization.
-     * @param basePackage base package
-     */
     public static void registerClassesFromBasePackage(String basePackage) {
         try {
             List<Class<?>> classes = getClassesRecursive(basePackage);
@@ -43,7 +35,7 @@ public class ClassManager {
             for (Class<?> cls : classes) {
                 if (!Modifier.isAbstract(cls.getModifiers())) {
                     System.out.println("Registered class: " + cls.getName());
-                    ClassManager.registerClass(cls);
+                    registerClass(cls);
                 }
             }
         } catch (Exception e) {
@@ -51,41 +43,61 @@ public class ClassManager {
         }
     }
 
-    /**
-     * Gets classes from package.
-     * @param packageName package name
-     * @return list of classes
-     * @throws Exception if there is an error loading class
-     */
     public static List<Class<?>> getClassesRecursive(String packageName) throws Exception {
         List<Class<?>> classes = new ArrayList<>();
         String path = packageName.replace('.', '/');
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL resource = classLoader.getResource(path);
-
         if (resource == null) {
             return Collections.emptyList();
         }
 
-        File directory = new File(resource.getFile());
-        if (!directory.exists()) {
-            return Collections.emptyList();
-        }
+        String protocol = resource.getProtocol();
 
-        for (File file : Objects.requireNonNull(directory.listFiles())) {
-            if (file.isDirectory()) {
-                // Recurse into subpackages
-                classes.addAll(getClassesRecursive(packageName + "." + file.getName()));
-            } else if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
-                String className = packageName + '.' + file.getName().replace(".class", "");
-                try {
-                    classes.add(Class.forName(className));
-                } catch (Throwable ignored) {
-                    ignored.getMessage();
-                }
+        if ("file".equals(protocol)) {
+            // Running from a project or IntelliJ out/ folder
+            File directory = new File(resource.getFile());
+            if (directory.exists()) {
+                findClassesInDirectory(directory, packageName, classes);
             }
+        } else if ("jar".equals(protocol)) {
+            // Running from JAR
+            findClassesInJar(resource, path, classes);
         }
 
         return classes;
+    }
+
+    private static void findClassesInDirectory(File directory, String packageName, List<Class<?>> classes)
+            throws ClassNotFoundException {
+
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            if (file.isDirectory()) {
+                findClassesInDirectory(file, packageName + "." + file.getName(), classes);
+            } else if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+                String className = packageName + '.' + file.getName().replace(".class", "");
+                classes.add(Class.forName(className));
+            }
+        }
+    }
+
+    private static void findClassesInJar(URL resource, String path, List<Class<?>> classes)
+            throws Exception {
+
+        String jarPath = resource.getPath();
+        jarPath = jarPath.substring(5, jarPath.indexOf("!")); // strip "file:" and everything after "!/"
+
+        try (JarFile jarFile = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8))) {
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+
+                if (name.startsWith(path) && name.endsWith(".class") && !name.contains("$")) {
+                    String className = name.replace('/', '.').replace(".class", "");
+                    classes.add(Class.forName(className));
+                }
+            }
+        }
     }
 }

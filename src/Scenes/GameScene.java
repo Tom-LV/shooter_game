@@ -22,9 +22,9 @@ public class GameScene extends Scene {
         
         WeaponSelect.createIcons(this);
         Player player = new Player(new Vector2(0, 0));
-        addObject(player);
-        addObject(new HealthBar(player));
-        addObject(new Minimap());
+        addNetworkObject(player);
+        addNetworkObject(new HealthBar(player));
+        addNetworkObject(new Minimap());
 
         
 

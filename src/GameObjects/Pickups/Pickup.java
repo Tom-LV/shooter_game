@@ -4,6 +4,7 @@ import Engine.GameObject;
 import Engine.Networking.Server;
 import GameObjects.Player;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A generic pickup that can be picked up by a player.
@@ -19,7 +20,7 @@ public abstract class Pickup extends GameObject {
     @Override
     public void update(float deltaTime) {
         time += deltaTime;
-        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
+        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         float closestDistance = Float.MAX_VALUE;
         GameObject closestPlayer = null;

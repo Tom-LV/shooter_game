@@ -5,6 +5,7 @@ import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Vector2;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -82,12 +83,12 @@ public class Bullet extends GameObject {
         float rotationInRad = (float) Math.toRadians(rotation);
         position = position.add(Vector2.fromRotation(rotationInRad).multiply(speed * deltaTime));
 
-        ArrayList<GameObject> gameObjects = Server.getServerObjectsOfClass(Enemy.class);
+        List<GameObject> gameObjects = Server.getServerObjectsOfClass(Enemy.class);
 
-        for (int i = 0; i < gameObjects.size(); i++) {
-            float distance = gameObjects.get(i).position.subtract(position).length();
+        for (GameObject gameObject : gameObjects) {
+            float distance = gameObject.position.subtract(position).length();
             if (distance <= 9f) {
-                Enemy enemy = (Enemy) gameObjects.get(i);
+                Enemy enemy = (Enemy) gameObject;
                 enemy.hit(damage);
                 Server.removeObject(this);
             }

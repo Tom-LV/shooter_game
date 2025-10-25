@@ -19,12 +19,13 @@ public class HealthPickup extends Pickup {
     protected void setup() {
         setSprite("health_pickup");
         scale = new Vector2(0.15f, 0.15f);
+        System.out.println("hello");
         // setLayer(-50);
     }
 
     @Override
     public void onPickUp(GameObject player) {
-        sendMessage("health_pickup", player.getOwnerUUID(), givenHealth);
+        Server.sendMessage("health_pickup", player.getOwnerUUID(), givenHealth);
         Server.removeObject(this);
     }
 }

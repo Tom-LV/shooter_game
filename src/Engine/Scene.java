@@ -1,10 +1,12 @@
 package Engine;
 
+import Engine.Networking.Client;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.*;
 
@@ -12,25 +14,20 @@ import javax.swing.*;
  * A scene class that can be extended to act as the main game panel.
  */
 public abstract class Scene extends JPanel {
-    ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
-    ArrayList<GameObject> serverObjects = new ArrayList<GameObject>();
+    private ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private ArrayList<GameObject> serverObjects = new ArrayList<>();
 
-
-    ArrayList<GameObject> toAddObject = new ArrayList<>();
-    ArrayList<GameObject> toRemoveObject = new ArrayList<>();
-
-    ArrayList<GameObject> toDrawOrder = new ArrayList<>();
-    ArrayList<GameObject> removeDrawOrder = new ArrayList<>();
-    ArrayList<GameObject> layerChange = new ArrayList<>();
+    private final ConcurrentLinkedQueue<Runnable> pendingUpdateActions = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Runnable> pendingDrawActions = new ConcurrentLinkedQueue<>();
 
     ArrayList<GameObject> drawOrder = new ArrayList<>();
-    
-
 
     /**
      * Set scene layout and call setupScene.
      */
     public Scene() {
+        Client.onServerObjectAdded(this::addServerObject);
+        Client.onServerObjectRemoved(this::destroyServerObject);
         this.setLayout(null);
         setupScene();
     }
@@ -65,56 +62,43 @@ public abstract class Scene extends JPanel {
     }
 
     // Should be implemented with binary search
-    private void layerChange() {
-        for (int i = 0; i < layerChange.size(); i++) {
-            GameObject gameObject = layerChange.get(i);
-            if (!drawOrder.contains(gameObject)) {
-                continue;
-            }
-            if (gameObject == null) {
-                continue;
-            }
-
-            boolean added = false;
-            for (int j = 0; j < drawOrder.size(); j++) {
-                GameObject other = drawOrder.get(j);
-                if (gameObject.getLayer() <= other.getLayer()) {
-                    drawOrder.remove(gameObject);
-                    drawOrder.add(j, gameObject);
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                drawOrder.remove(gameObject);
-                drawOrder.add(gameObject);
-            }
+    private void updateLayer(GameObject gameObject) {
+        if (!drawOrder.contains(gameObject)) {
+            return;
         }
 
-        layerChange = new ArrayList<>();
+        boolean added = false;
+        for (int j = 0; j < drawOrder.size(); j++) {
+            GameObject other = drawOrder.get(j);
+            if (gameObject.getLayer() <= other.getLayer()) {
+                drawOrder.remove(gameObject);
+                drawOrder.add(j, gameObject);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            drawOrder.remove(gameObject);
+            drawOrder.add(gameObject);
+        }
     }
 
     private void draw(Graphics g) {
-        for (GameObject gameObject : toDrawOrder) {
-            if (!drawOrder.contains(gameObject)) {
-                drawOrder.add(gameObject);
+        Runnable task;
+        while ((task = pendingDrawActions.poll()) != null) {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                System.err.println("Error while applying pending network action: " + t.getMessage());
             }
         }
-        toDrawOrder.clear();
 
-        for (GameObject gameObject : removeDrawOrder) {
-            if (drawOrder.contains(gameObject)) {
-                drawOrder.remove(gameObject);
-            }
-        }
-        removeDrawOrder.clear();
-        layerChange();
-        for (int i = 0; i < drawOrder.size(); i++) {
-            if (drawOrder.get(i) == null) {
+        for (GameObject gameObject : drawOrder) {
+            if (gameObject == null) {
                 continue;
 
             }
-            drawOrder.get(i).draw((Graphics2D) g);
+            gameObject.draw((Graphics2D) g);
         }
     }
 
@@ -123,8 +107,7 @@ public abstract class Scene extends JPanel {
      */
     void update(float deltaTime) {
 
-        for (Iterator<GameObject> it = gameObjects.iterator(); it.hasNext();) {
-            GameObject gameObject = it.next();
+        for (GameObject gameObject : gameObjects) {
             gameObject.animationUpdate(deltaTime);
             gameObject.update(deltaTime);
             if (gameObject.needsLayerChange) {
@@ -132,69 +115,82 @@ public abstract class Scene extends JPanel {
             }
         }
 
-        for (Iterator<GameObject> it = serverObjects.iterator(); it.hasNext();) {
-            GameObject gameObject = it.next();
+        for (GameObject gameObject : serverObjects) {
             gameObject.serverObjectInterpolation(deltaTime);
             if (gameObject.needsLayerChange) {
                 addToLayerChange(gameObject);
             }
         }
 
-        for (GameObject gameObject : toAddObject) {
-            if (!gameObjects.contains(gameObject)) {
-                gameObject.setLayer(gameObject.getLayer());
-                gameObjects.add(gameObject);
-                addDrawOrder(gameObject);
+        Runnable task;
+        while ((task = pendingUpdateActions.poll()) != null) {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                System.err.println("Error while applying pending network action: " + t.getMessage());
             }
         }
-        toAddObject.clear();
-
-        for (GameObject gameObject : toRemoveObject) {
-            if (gameObjects.contains(gameObject)) {
-                gameObject.onDestroy();
-                gameObjects.remove(gameObject);
-                removeDrawOrder(gameObject);
-            }
-        }
-        toRemoveObject.clear();
 
         repaint();
     }
 
     public abstract void setupScene();
 
-    private synchronized void addToLayerChange(GameObject gameObject) {
-        if (layerChange.contains(gameObject)) {
-            return;
-        }
+    private void addToLayerChange(GameObject gameObject) {
         gameObject.needsLayerChange = false;
-        layerChange.add(gameObject);
+        pendingDrawActions.add(() -> {
+            updateLayer(gameObject);
+        });
+
     }
 
 
-    private synchronized void addDrawOrder(GameObject gameObject) {
-        toDrawOrder.add(gameObject);
+    private void addDrawOrder(GameObject gameObject) {
+        pendingDrawActions.add(() -> {
+            if (drawOrder.contains(gameObject)) {
+                return;
+            }
+           drawOrder.add(gameObject);
+        });
     }
 
-    private synchronized void removeDrawOrder(GameObject gameObject) {
-        removeDrawOrder.add(gameObject);
+    private void removeDrawOrder(GameObject gameObject) {
+        pendingDrawActions.add(() -> {
+            drawOrder.remove(gameObject);
+        });
     }
 
     /**
      * Add a gameObject to scene.
      * @param gameObject object to add
      */
-    public synchronized void addObject(GameObject gameObject) {
-        gameObject.setOwnerUUID(Engine.getClient().getClientId());
-        toAddObject.add(gameObject);
+    public void addNetworkObject(GameObject gameObject) {
+        pendingUpdateActions.add(() -> {
+            if (gameObjects.contains(gameObject)) {
+                return;
+            }
+            gameObject.setOwnerUUID(Client.getClientId());
+            gameObject.setLayer(gameObject.getLayer());
+            gameObjects.add(gameObject);
+            Client.addObject(gameObject);
+            addDrawOrder(gameObject);
+        });
     }
 
     /**
      * Internal method for destroying scene gameObjects.
      * @param gameObject gameObject that is scene
      */
-    synchronized void destroyObject(GameObject gameObject) {
-        toRemoveObject.add(gameObject);
+    void destroyNetworkObject(GameObject gameObject) {
+        pendingUpdateActions.add(() -> {
+            if (!gameObjects.contains(gameObject)) {
+                return;
+            }
+            gameObject.onDestroy();
+            gameObjects.remove(gameObject);
+            Client.removeObject(gameObject);
+            removeDrawOrder(gameObject);
+        });
     }
 
 
@@ -203,12 +199,10 @@ public abstract class Scene extends JPanel {
      * @param gameObject gameObject
      */
     protected void addServerObject(GameObject gameObject) {
-        if (serverObjects.contains(gameObject) || gameObject == null) {
-            return;
-        }
-        gameObject.setLayer(gameObject.getLayer());
-        serverObjects.add(gameObject);
-        addDrawOrder(gameObject);
+        pendingUpdateActions.add(() -> {
+           serverObjects.add(gameObject);
+           addDrawOrder(gameObject);
+        });
     }
 
     /**
@@ -216,18 +210,9 @@ public abstract class Scene extends JPanel {
      * @param gameObject gameObject
      */
     protected void destroyServerObject(GameObject gameObject) {
-        if (serverObjects.contains(gameObject)) {
-            removeDrawOrder(gameObject);
-            gameObject.onDestroy();
+        pendingUpdateActions.add(() -> {
             serverObjects.remove(gameObject);
-        }
-    }
-
-    public ArrayList<GameObject> getGameObjects() {
-        return gameObjects;
-    }
-
-    protected ArrayList<GameObject> getServerObject() {
-        return serverObjects;
+            removeDrawOrder(gameObject);
+        });
     }
 }

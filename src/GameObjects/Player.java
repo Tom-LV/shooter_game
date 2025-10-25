@@ -5,6 +5,7 @@ import Engine.Camera;
 import Engine.Engine;
 import Engine.GameObject;
 import Engine.Inputs.Input;
+import Engine.Networking.Client;
 import Engine.Networking.NetEvent;
 import Engine.Sound.AudioClip;
 import Engine.Sound.AudioPlayer;
@@ -188,7 +189,7 @@ public class Player extends GameObject {
             
             AudioPlayer.playAudio(shootSfx, false);
             Vector2 bulletPosition = position;
-            sendMessage(weaponAttackType, bulletPosition, rotation);
+            Client.sendMessage(weaponAttackType, bulletPosition, rotation);
             time = 0;
             playAnimation(animations.get(selectedWeapon));
         }

@@ -5,6 +5,7 @@ import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Pickups.PickupManager;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -43,7 +44,7 @@ public class Enemy extends GameObject {
             setSprite("zombie");
         }
 
-        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
+        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         float closestDistance = Float.MAX_VALUE;
         GameObject closestPlayer = null;
@@ -85,11 +86,10 @@ public class Enemy extends GameObject {
 
         if (distance < 25f) {
             if (attackTimer > 0.5f) {
-                sendMessage("player_hit", player.getOwnerUUID(), 10);
+                Server.sendMessage("player_hit", player.getOwnerUUID(), 10);
                 attackTimer = 0;
             }
         } else {
-            
             velocity = velocity.add(new Vector2(speed, 0f).rotate(rotation));
         }
     } 

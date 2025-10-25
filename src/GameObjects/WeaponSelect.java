@@ -30,9 +30,9 @@ public class WeaponSelect extends GameObject {
         weaponIcons.add(rifle);
         selectWeapon(0);
 
-        scene.addObject(pistol);
-        scene.addObject(shotgun);
-        scene.addObject(rifle);
+        scene.addNetworkObject(pistol);
+        scene.addNetworkObject(shotgun);
+        scene.addNetworkObject(rifle);
 
         float xPos = 40;
 
