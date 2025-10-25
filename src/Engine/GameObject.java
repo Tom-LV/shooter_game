@@ -243,6 +243,15 @@ public class GameObject implements Serializable {
         }
     }
 
+    public void updateFromOther(GameObject other) {
+        position = other.position;
+        scale = other.scale;
+        rotation = other.rotation;
+        if (other.currentSprite != null) {
+            currentSprite = other.currentSprite;
+        }
+    }
+
     /**
      * Writes gameObject to the given output stream.
      * @param dos DataOutputStream

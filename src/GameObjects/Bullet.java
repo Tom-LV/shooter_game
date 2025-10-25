@@ -82,7 +82,7 @@ public class Bullet extends GameObject {
         float rotationInRad = (float) Math.toRadians(rotation);
         position = position.add(Vector2.fromRotation(rotationInRad).multiply(speed * deltaTime));
 
-        ArrayList<GameObject> gameObjects = Server.getServerObjectOfClass(Enemy.class);
+        ArrayList<GameObject> gameObjects = Server.getServerObjectsOfClass(Enemy.class);
 
         for (int i = 0; i < gameObjects.size(); i++) {
             float distance = gameObjects.get(i).position.subtract(position).length();

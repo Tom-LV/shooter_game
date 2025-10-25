@@ -15,152 +15,138 @@ import java.util.UUID;
  * A class to create byte packets.
  */
 public class Packet {
-
-    byte[] data;
-    ArrayList<GameObject> gameOjbects = new ArrayList<>();
-    ArrayList<NetMessage> netMessages = new ArrayList<>();
-    ArrayList<Integer> acknowledged = new ArrayList<>();
-    UUID id;
+    DataOutputStream dos;
+    DataInputStream dis;
+    ByteArrayOutputStream bos;
 
     /**
      * Reads and creates a new packet.
      * @param bytes packet bytes
      */
     public Packet(byte[] bytes) {
-        data = bytes;
-        try {
-            deserializeData(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        dis = new DataInputStream(new ByteArrayInputStream(bytes));
     }
 
     /**
-     * Creates a new packet to send.
-     * @param senderId client id
-     * @param gameObjects gameObjects
+     * Creates a new packet.
      */
-    public Packet(UUID senderId, HashMap<ClientData, ArrayList<GameObject>> gameObjects, 
-                  ArrayList<NetMessage> messages, ArrayList<Integer> acknowledged) {
-        try {
-            serializeData(senderId, gameObjects, messages, acknowledged);
-        } catch (Exception e) {
-            data = new byte[0];
-            e.printStackTrace();
-        }
-    }
-
-    public ArrayList<GameObject> getGameObjects() {
-        return gameOjbects;
-    }
-
-    public ArrayList<NetMessage> getMessages() {
-        return netMessages;
-    }
-
-    public ArrayList<Integer> getAcknowledged() {
-        return acknowledged;
-    }
-
-    public byte[] getBytes() {
-        return data;
+    public Packet() {
+        bos = new ByteArrayOutputStream();
+        dos = new DataOutputStream(bos);
     }
 
     /**
-     * Serializes given gameObjects.
-     * @param id client id
-     * @param gameObjects gameObjects
-     * @throws IOException when there is a problem writing to output stream
+     * Write UUID to packet.
+     * @param id uuid
+     * @throws IOException when there is an error
      */
-    private void serializeData(UUID id, HashMap<ClientData, ArrayList<GameObject>> gameObjects, 
-                               ArrayList<NetMessage> messages, ArrayList<Integer> acknowledged)
-            throws IOException {
-        if (gameObjects == null) {
-            return;
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-
-        // Write id
+    public void writeSenderId(UUID id) throws IOException {
         dos.writeLong(id.getMostSignificantBits());
         dos.writeLong(id.getLeastSignificantBits());
-
-        // Get object count
-        int objectCount = 0;
-        for (Iterator<ArrayList<GameObject>> it = gameObjects.values().iterator(); it.hasNext();) {
-            objectCount += it.next().size();
-        }
-
-        dos.writeInt(objectCount);
-
-        // Serialize objects
-        for (Iterator<ArrayList<GameObject>> it = gameObjects.values().iterator(); it.hasNext();) {
-            ArrayList<GameObject> entityGameObjects = it.next();
-            for (int i = 0; i < entityGameObjects.size(); i++) {
-                entityGameObjects.get(i).toOutputStream(dos);
-            }
-        }
-
-        dos.writeInt(messages.size());
-
-        // Serialize messages
-        for (int i = 0; i < messages.size(); i++) {
-            NetMessage message = messages.get(i);
-            message.toOutputStream(dos);
-        }
-
-        // Serialize acknowledgments
-        dos.writeInt(acknowledged.size());
-
-        for (int i = 0; i < acknowledged.size(); i++) {
-            dos.writeInt(acknowledged.get(i));
-        }
-
-        dos.flush();
-        data = baos.toByteArray();
     }
 
-    private void deserializeData(byte[] data) throws IOException {
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
+    public void writeGameObjects(ArrayList<GameObject> objects) throws IOException {
+        dos.writeInt(objects.size());
+        for (GameObject gameObject : objects) {
+            gameObject.toOutputStream(dos);
+        }
+    }
 
-        // Read senderId
+    public void writeInt(int i) throws IOException {
+        dos.writeInt(i);
+    }
+
+    /**
+     * Writes NetEvents to package.
+     * @param messages NetEvents
+     * @throws IOException when there is an issue
+     */
+    public void writeMessages(ArrayList<NetMessage> messages) throws IOException {
+        dos.writeInt(messages.size());
+        for (NetMessage message : messages) {
+            if (message == null) {
+                continue;
+            }
+            message.toOutputStream(dos);
+        }
+    }
+
+    /**
+     * Write acknowledged messages to package.
+     * @param acknowledgedMessages acknowledged messages
+     * @throws IOException when there is an issue
+     */
+    public void writeAcknowledged(ArrayList<Integer> acknowledgedMessages) throws IOException {
+        dos.writeInt(acknowledgedMessages.size());
+        for (Integer message : acknowledgedMessages) {
+            dos.writeInt(message);
+        }
+    }
+
+    /**
+     * Get the byte array of package.
+     * @return byte array of package
+     * @throws IOException when there is an error
+     */
+    public byte[] getByteArray() throws IOException {
+        dos.flush();
+        return bos.toByteArray();
+    }
+
+    /**
+     * Reads UUID from package.
+     * @return UUID from package
+     * @throws IOException when there is an error reading
+     */
+    public UUID readUUID() throws IOException {
         long most = dis.readLong();
         long least = dis.readLong();
-        id  = new UUID(most, least);
+        return new UUID(most, least);
+    }
 
-        // Read object count
-        int objectCount = dis.readInt();
-
-        ArrayList<GameObject> objects = new ArrayList<GameObject>();
-        for (int i = 0; i < objectCount; i++) {
-            GameObject obj = GameObject.fromInputStream(dis);
-            if (obj != null) {
-                objects.add(obj);
-            }
+    public ArrayList<GameObject> readGameObjects() throws IOException {
+        ArrayList<GameObject> objects = new ArrayList<>();
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            objects.add(GameObject.fromInputStream(dis));
         }
+        return objects;
+    }
 
-        // Read messages
+    /**
+     * Reads messages from byte array.
+     * @return Message array list
+     * @throws IOException when there is an error reading
+     */
+    public ArrayList<NetMessage> readMessages() throws IOException {
         int messageCount = dis.readInt();
         ArrayList<NetMessage> messages = new ArrayList<>();
 
         for (int i = 0; i < messageCount; i++) {
             NetMessage message = NetMessage.fromInputStream(dis);
-            if (message != null) {
-                messages.add(message);
+            if (message == null) {
+                continue;
             }
+            messages.add(message);
         }
-
-        // Read acknowledgments
-        int acknowledgedCount = dis.readInt();
-        ArrayList<Integer> acknowledged = new ArrayList<>();
-
-        for (int i = 0; i < acknowledgedCount; i++) {
-            acknowledged.add(dis.readInt());
-        }
-
-        this.acknowledged = acknowledged;
-        gameOjbects = objects;
-        netMessages = messages;
+        return messages;
     }
 
+    /**
+     * Read acknowledged messages from byte array
+     * @return list of acknowledged message ids
+     * @throws IOException when there is an issue reading
+     */
+    public ArrayList<Integer> readAcknowledgedMessages() throws IOException {
+        int messageCount = dis.readInt();
+        ArrayList<Integer> acknowledgedMessages = new ArrayList<>();
+        for (int i = 0; i < messageCount; i++) {
+            acknowledgedMessages.add(dis.readInt());
+        }
+        return acknowledgedMessages;
+    }
+
+    public int readInt() throws IOException {
+        return dis.readInt();
+    }
 }

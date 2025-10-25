@@ -19,7 +19,7 @@ public abstract class Pickup extends GameObject {
     @Override
     public void update(float deltaTime) {
         time += deltaTime;
-        ArrayList<GameObject> playerObjects = Server.getClientObjectOfClass(Player.class);
+        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         float closestDistance = Float.MAX_VALUE;
         GameObject closestPlayer = null;

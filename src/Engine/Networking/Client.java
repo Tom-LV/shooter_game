@@ -74,7 +74,7 @@ public class Client extends Thread {
         if (!running) {
             return;
         }
-        HashMap<ClientData, ArrayList<GameObject>> gameObjectMap = new HashMap<>();
+        HashMap<ConnectionData, ArrayList<GameObject>> gameObjectMap = new HashMap<>();
         gameObjectMap.put(null, gameObjects);
         Packet dataPacket = new Packet(clientId, gameObjectMap, messages, executedMessages);
         sendingBuf = dataPacket.getBytes();

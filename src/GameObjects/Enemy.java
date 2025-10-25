@@ -43,7 +43,7 @@ public class Enemy extends GameObject {
             setSprite("zombie");
         }
 
-        ArrayList<GameObject> playerObjects = Server.getClientObjectOfClass(Player.class);
+        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         float closestDistance = Float.MAX_VALUE;
         GameObject closestPlayer = null;

@@ -29,13 +29,13 @@ public class EnemyManager extends GameObject {
     }
 
     private void spawnEnemy() {
-        ArrayList<GameObject> enemies = Server.getServerObjectOfClass(Enemy.class);
+        ArrayList<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
 
         if (enemies.size() > 20) {
             return;
         }
 
-        ArrayList<GameObject> playerObjects = Server.getClientObjectOfClass(Player.class);
+        ArrayList<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         if (playerObjects.size() <= 0) {
             return;
