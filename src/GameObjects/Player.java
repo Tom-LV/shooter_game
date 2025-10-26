@@ -33,6 +33,8 @@ public class Player extends GameObject {
     float invTimer = 0f;
     String weaponAttackType = "shoot_pistol";
 
+    boolean hasWeapon = false;
+
     public int getHealth() {
         return health;
     }
@@ -45,6 +47,12 @@ public class Player extends GameObject {
         selectedWeapon = index;
         stopAnimation();
         switch (index) {
+            case -1:
+                reloadTime = 0.3f;
+                weaponAttackType = "";
+                setSprite("player");
+                WeaponSelect.selectWeapon(-1);
+                break;
             case 0:
                 reloadTime = 0.3f;
                 weaponAttackType = "shoot_pistol";
@@ -104,7 +112,7 @@ public class Player extends GameObject {
     public static void healthPickup(int health) {
         List<GameObject> players = Engine.getCurrentScene().getObjectsOfClass(Player.class);
         Player player;
-        if (players.size() == 0) {
+        if (players.isEmpty()) {
             return;
         }
         AudioPlayer.playAudio(Player.pickupSfx, false);
@@ -113,7 +121,18 @@ public class Player extends GameObject {
         if (player.getHealth() > player.maxHealth) {
             player.health = player.maxHealth;
         }
+    }
 
+    @NetEvent("weapon_pickup")
+    public static void pickupWeapon() {
+        List<GameObject> players = Engine.getCurrentScene().getObjectsOfClass(Player.class);
+        Player player;
+        if (players.isEmpty()) {
+            return;
+        }
+        player = (Player) players.get(0);
+        player.hasWeapon = true;
+        player.selectWeapon(0);
     }
 
     @Override
@@ -121,7 +140,6 @@ public class Player extends GameObject {
         setSprite("player_pistol");
         setLayer(1);
         scale = new Vector2(0.15f, 0.15f);
-        selectWeapon(0);
         Animation pistolAnim = new Animation();
         pistolAnim.addFrame("player_pistol1", 0.03f);
         pistolAnim.addFrame("player_pistol2", 0.03f);
@@ -149,6 +167,7 @@ public class Player extends GameObject {
         animations.add(pistolAnim);
         animations.add(shotgunAnim);
         animations.add(rifleAnim);
+        selectWeapon(-1);
     }
 
     @Override
@@ -158,13 +177,16 @@ public class Player extends GameObject {
             invTimer -= deltaTime;
         }
 
-        if (Input.isKeyPressed(KeyEvent.VK_1)) {
-            selectWeapon(0);
-        } else if (Input.isKeyPressed(KeyEvent.VK_2)) {
-            selectWeapon(1);
-        } else if (Input.isKeyPressed(KeyEvent.VK_3)) {
-            selectWeapon(2);
+        if (hasWeapon) {
+            if (Input.isKeyPressed(KeyEvent.VK_1)) {
+                selectWeapon(0);
+            } else if (Input.isKeyPressed(KeyEvent.VK_2)) {
+                selectWeapon(1);
+            } else if (Input.isKeyPressed(KeyEvent.VK_3)) {
+                selectWeapon(2);
+            }
         }
+
 
         // Movement
         if (Input.isKeyPressed(KeyEvent.VK_W)) {
@@ -185,13 +207,18 @@ public class Player extends GameObject {
         rotation = Input.mouse.getWorldPosition().subtract(position).getRotation();
 
         // Shooting
-        if (Input.mouse.isClicked(0) && time >= reloadTime) {
-            
+        if (Input.mouse.isClicked(0) && time >= reloadTime && hasWeapon) {
             AudioPlayer.playAudio(shootSfx, false);
             Vector2 bulletPosition = position;
             Client.sendMessage(weaponAttackType, bulletPosition, rotation);
             time = 0;
             playAnimation(animations.get(selectedWeapon));
+        }
+
+        if (Input.isKeyPressed(KeyEvent.VK_Q) && hasWeapon) {
+            hasWeapon = false;
+            Client.sendMessage("throw_weapon", position, rotation);
+            selectWeapon(-1);
         }
 
         if (position.y < -910) {

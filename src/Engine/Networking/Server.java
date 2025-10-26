@@ -70,6 +70,7 @@ public class Server {
                     ArrayList<GameObject> gameObjects = dataPacket.readGameObjects();
                     ArrayList<NetMessage> messages = dataPacket.readMessages();
                     ArrayList<Integer> acknowledgedMessages = dataPacket.readAcknowledgedMessages();
+
                     connectionData.receivedPackage();
                     Server.pendingNetworkActions.add(() -> {
                         connectionData.updateGameObjects(gameObjects, false);
@@ -219,7 +220,6 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

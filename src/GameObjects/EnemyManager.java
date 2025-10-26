@@ -24,8 +24,10 @@ public class EnemyManager extends GameObject {
     public void update(float deltaTime) {
         time += deltaTime;
 
-        if (time >= rng.nextFloat(2.0f, 4.0f)) {
-            spawnEnemy();
+        if (time >= rng.nextFloat(1.0f, 2.0f)) {
+            for (int i = 0; i < 1; i++) {
+                spawnEnemy();
+            }
         }
     }
 

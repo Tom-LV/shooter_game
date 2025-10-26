@@ -21,9 +21,9 @@ public class WeaponSelect extends GameObject {
      * @param scene scene to create icons in
      */
     public static void createIcons(Scene scene) {
-        WeaponSelect pistol = new WeaponSelect("pistol");
-        WeaponSelect shotgun = new WeaponSelect("shotgun");
-        WeaponSelect rifle = new WeaponSelect("rifle");
+        WeaponSelect pistol = new WeaponSelect("pistol_icon");
+        WeaponSelect shotgun = new WeaponSelect("shotgun_icon");
+        WeaponSelect rifle = new WeaponSelect("rifle_icon");
 
         weaponIcons.add(pistol);
         weaponIcons.add(shotgun);
@@ -37,7 +37,7 @@ public class WeaponSelect extends GameObject {
         float xPos = 40;
 
         for (WeaponSelect weapon : weaponIcons) {
-            weapon.position.y = 225;
+            weapon.position.y = 40;
             weapon.position.x = xPos;
             xPos += 65;
         }
@@ -53,6 +53,9 @@ public class WeaponSelect extends GameObject {
         }
         for (WeaponSelect weapon : weaponIcons) {
             weapon.scale = new Vector2(0.04f, 0.04f);
+        }
+        if (weaponIndex == -1) {
+            return;
         }
 
         WeaponSelect weapon = weaponIcons.get(weaponIndex);

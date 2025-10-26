@@ -30,7 +30,7 @@ public class Client {
     private static final ConcurrentLinkedQueue<Runnable> pendingNetworkActions = new ConcurrentLinkedQueue<>();
     private static float tick = 0f;
 
-    private static final byte[] receivingBuf = new byte[8192];
+    private static final byte[] receivingBuf = new byte[32768];
     private static Thread clientThread;
 
     /**
@@ -179,7 +179,6 @@ public class Client {
             dataPacket.writeGameObjects(clientConnectionData.getConnectionObjects());
             dataPacket.writeMessages(serverConnectionData.getSentMessages());
             dataPacket.writeAcknowledged(serverConnectionData.getExecutedMessages());
-
             byte[] sendingBuf = dataPacket.getByteArray();
             DatagramPacket packet = new DatagramPacket(sendingBuf,
                     sendingBuf.length, serverConnectionData.getAddress(), serverConnectionData.getPort());

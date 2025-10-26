@@ -58,7 +58,7 @@ public class Enemy extends GameObject {
 
         goToClosestPlayer(deltaTime, closestPlayer, closestDistance);
 
-
+        collision();
 
         position = position.add(velocity.multiply(deltaTime));
         velocity = new Vector2(0, 0);
@@ -75,6 +75,21 @@ public class Enemy extends GameObject {
         if (position.x > 1350) {
             position.x = 1350;
         }
+    }
+
+    private void collision() {
+        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
+        Vector2 newPos = position;
+        for (GameObject enemy : enemies) {
+            if (enemy.equals(this)) {
+                continue;
+            }
+            Vector2 distance = enemy.position.subtract(position);
+            if (distance.length() < 30f) {
+                newPos = newPos.subtract(distance.normalize().multiply(30 - distance.length()));
+            }
+        }
+        position = newPos;
     }
 
     private void goToClosestPlayer(float deltaTime, GameObject player, float distance) {

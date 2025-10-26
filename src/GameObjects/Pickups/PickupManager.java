@@ -20,7 +20,9 @@ public class PickupManager {
                 healthPickup.position = position;
                 Server.addObject(healthPickup);
                 break;
-        
+            case "weapon_pickup":
+                WeaponPickup weaponPickup = new WeaponPickup(position);
+                Server.addObject(weaponPickup);
             default:
                 break;
         }

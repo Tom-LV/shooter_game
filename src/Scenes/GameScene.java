@@ -6,7 +6,8 @@ import Engine.Vector2;
 import GameObjects.Background;
 import GameObjects.EnemyManager;
 import GameObjects.HealthBar;
-import GameObjects.Minimap;
+import GameObjects.Pickups.PickupManager;
+import GameObjects.Pickups.WeaponPickup;
 import GameObjects.Player;
 import GameObjects.WeaponSelect;
 import java.awt.Color;
@@ -24,10 +25,8 @@ public class GameScene extends Scene {
         Player player = new Player(new Vector2(0, 0));
         addNetworkObject(player);
         addNetworkObject(new HealthBar(player));
-        addNetworkObject(new Minimap());
 
-        
-
+        Server.addObject(new WeaponPickup(new Vector2(0, 100)));
         Server.addObject(new EnemyManager());
         Server.addObject(new Background());
     }

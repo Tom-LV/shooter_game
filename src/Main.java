@@ -14,6 +14,9 @@ public class Main {
         // Art asset path
         String artAssetPath = "src\\Assets\\art\\";
 
+
+        Sprite.loadImage("player", artAssetPath + "player\\smith.png",
+                new Vector2(0.25f, 0.5f));
         // Pistol sprites
         Sprite.loadImage("player_pistol", artAssetPath + "player\\smith_pistol.png",
                 new Vector2(0.25f, 0.5f));
@@ -64,12 +67,20 @@ public class Main {
         Sprite.loadImage("health_pickup", artAssetPath + "medkit.png",
                 new Vector2(0.5f, 0.5f));
 
-        // Weapon icons
+        // Weapons
         Sprite.loadImage("pistol", artAssetPath + "pistol.png",
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("rifle", artAssetPath + "rifle.png",
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("shotgun", artAssetPath + "shotgun.png",
+                new Vector2(0.5f, 0.5f));
+
+        // Weapon icons
+        Sprite.loadImage("pistol_icon", artAssetPath + "pistol_icon.png",
+                new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("rifle_icon", artAssetPath + "rifle_icon.png",
+                new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("shotgun_icon", artAssetPath + "shotgun_icon.png",
                 new Vector2(0.5f, 0.5f));
     }
 
