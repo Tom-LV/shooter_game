@@ -75,6 +75,11 @@ public class Client {
                 Packet dataPacket = new Packet(packet.getData());
 
                 try {
+                    int packageId = dataPacket.readInt();
+                    if (packageId < serverConnectionData.getPackageId()) {
+                        continue;
+                    }
+                    serverConnectionData.setPackageId(packageId);
                     int connectionCount = dataPacket.readInt();
                     ArrayList<GameObject> gameObjects = new ArrayList<>();
                     for (int i = 0; i < connectionCount; i++) {
@@ -90,7 +95,7 @@ public class Client {
                         serverConnectionData.removeAckMessages(ackMessages);
                     });
                     Client.pendingNetworkActions.add(() -> {
-                        serverConnectionData.updateGameObjects(gameObjects);
+                        serverConnectionData.updateGameObjects(gameObjects, true);
                     });
 
                 } catch (IOException e) {
@@ -154,7 +159,7 @@ public class Client {
             try {
                 task.run();
             } catch (Throwable t) {
-                System.err.println("Error while applying pending network action: " + t.getMessage());
+                System.err.println("Error while applying pending client action: " + t.getMessage());
             }
         }
 
@@ -169,6 +174,8 @@ public class Client {
         Packet dataPacket = new Packet();
         try {
             dataPacket.writeSenderId(clientConnectionData.getUUID());
+            dataPacket.writeInt(clientConnectionData.getPackageId());
+            clientConnectionData.incrementPackageId();
             dataPacket.writeGameObjects(clientConnectionData.getConnectionObjects());
             dataPacket.writeMessages(serverConnectionData.getSentMessages());
             dataPacket.writeAcknowledged(serverConnectionData.getExecutedMessages());
@@ -212,13 +219,14 @@ public class Client {
         if (!isRunning()) {
             return;
         }
-        clientConnectionData.onObjectAdded(consumer);
+
+        serverConnectionData.onObjectAdded(consumer);
     }
 
     public static void onServerObjectRemoved(Consumer<GameObject> consumer) {
         if (!isRunning()) {
             return;
         }
-        clientConnectionData.onObjectRemoved(consumer);
+        serverConnectionData.onObjectRemoved(consumer);
     }
 }

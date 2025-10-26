@@ -123,7 +123,6 @@ public class GameObject implements Serializable {
         this.id = id;
         this.position = position;
         this.scale = scale;
-        this.scale = scale;
         this.rotation = rotation;
         this.myClass = cls;
         this.ownerUUID = ownerId;
@@ -227,19 +226,13 @@ public class GameObject implements Serializable {
         position = position.add(targetPos.subtract(position).multiply(t));
     }
 
-    /**
-     * Update object values from sender.
-     * @param position position
-     * @param scale scale
-     * @param rotation rotation
-     * @param spriteIndex sprite index
-     */
-    public void updateValues(Vector2 position, Vector2 scale, float rotation, int spriteIndex) {
-        targetPos = position;
-        this.scale = scale;
-        this.rotation = rotation;
-        if (spriteIndex != -1) {
-            setSprite(spriteIndex);
+    public void serverUpdateFromOther(GameObject other) {
+        targetPos = other.position;
+        this.scale = other.scale;
+        this.rotation = other.rotation;
+
+        if (other.currentSprite != null) {
+            setSprite(other.currentSprite.getIndex());
         }
     }
 
@@ -247,8 +240,9 @@ public class GameObject implements Serializable {
         position = other.position;
         scale = other.scale;
         rotation = other.rotation;
+
         if (other.currentSprite != null) {
-            currentSprite = other.currentSprite;
+            setSprite(other.currentSprite.getIndex());
         }
     }
 

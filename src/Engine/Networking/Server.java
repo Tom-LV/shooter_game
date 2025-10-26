@@ -53,6 +53,7 @@ public class Server {
 
                 try {
                     UUID senderId = dataPacket.readUUID();
+                    int packetId = dataPacket.readInt();
                     ConnectionData  connectionData;
                     if (uuidConnectionDataHashMap.containsKey(senderId)) {
                         connectionData = uuidConnectionDataHashMap.get(senderId);
@@ -62,12 +63,16 @@ public class Server {
                             Server.addNewClient(connectionData);
                         });
                     }
+                    if (packetId < connectionData.getPackageId()) {
+                        continue;
+                    }
+                    connectionData.setPackageId(packetId);
                     ArrayList<GameObject> gameObjects = dataPacket.readGameObjects();
                     ArrayList<NetMessage> messages = dataPacket.readMessages();
                     ArrayList<Integer> acknowledgedMessages = dataPacket.readAcknowledgedMessages();
                     connectionData.receivedPackage();
                     Server.pendingNetworkActions.add(() -> {
-                        connectionData.updateGameObjects(gameObjects);
+                        connectionData.updateGameObjects(gameObjects, false);
                     });
                     Server.pendingNetworkActions.add(() -> {
                         connectionData.executeMessages(messages);
@@ -104,7 +109,7 @@ public class Server {
             try {
                 task.run();
             } catch (Throwable t) {
-                System.err.println("Error while applying pending network action: " + t.getMessage());
+                System.err.println("Error while applying pending server action: " + t.getMessage());
             }
         }
 
@@ -192,9 +197,11 @@ public class Server {
     }
 
     private static void sendNetworkUpdate() {
+        serverConnectionData.incrementPackageId();
         for (ConnectionData connectionData : connections) {
             Packet dataPacket = new Packet();
             try {
+                dataPacket.writeInt(serverConnectionData.getPackageId());
                 dataPacket.writeInt(connections.size());
                 dataPacket.writeGameObjects(serverConnectionData.getConnectionObjects());
                 for (ConnectionData other : connections) {
@@ -221,7 +228,6 @@ public class Server {
      * @param type event type
      * @param client client UUID
      * @param args method arguments
-     * @return Generated NetMessage
      */
     public static void sendMessage(String type, UUID client, Object... args) {
         if (!isRunning()) {

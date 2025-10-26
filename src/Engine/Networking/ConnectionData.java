@@ -20,9 +20,22 @@ public class ConnectionData {
     private final ArrayList<NetMessage> sentMessages = new ArrayList<>();
     private final ArrayList<Integer> executedMessages = new ArrayList<>();
     private final ArrayList<GameObject> connectionObjects = new ArrayList<>();
+    private int packageId = 0;
 
-    private static final ArrayList<Consumer<GameObject>> objectAddedRunnable = new ArrayList<>();
-    private static final ArrayList<Consumer<GameObject>> objectRemovedRunnable = new ArrayList<>();
+    private final ArrayList<Consumer<GameObject>> objectAddedRunnable = new ArrayList<>();
+    private final ArrayList<Consumer<GameObject>> objectRemovedRunnable = new ArrayList<>();
+
+    public int getPackageId() {
+        return packageId;
+    }
+
+    public void incrementPackageId() {
+        packageId++;
+    }
+
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
+    }
 
     public void onObjectAdded(Consumer<GameObject> consumer) {
         objectAddedRunnable.add(consumer);
@@ -84,13 +97,18 @@ public class ConnectionData {
         callRemoved(object);
     }
 
-    public void updateGameObjects(ArrayList<GameObject> newGameObjects) {
+    public void updateGameObjects(ArrayList<GameObject> newGameObjects, boolean interpolate) {
         ArrayList<GameObject> localObjects = getConnectionObjects();
         for (GameObject serverObject : newGameObjects) {
             boolean found = false;
             for (GameObject localObject : localObjects) {
                 if (serverObject.equals(localObject)) {
-                    localObject.updateFromOther(serverObject);
+                    if (interpolate) {
+                        localObject.serverUpdateFromOther(serverObject);
+                    } else {
+                        localObject.updateFromOther(serverObject);
+                    }
+
                     found = true;
                     break;
                 }
@@ -126,8 +144,8 @@ public class ConnectionData {
         for (int i = executedMessages.size() - 1; i >= 0; i--) {
             int ackId = executedMessages.get(i);
             boolean found = false;
-            for (int j = 0; j < messages.size(); j++) {
-                if (messages.get(i).getId() == ackId) {
+            for (NetMessage message : messages) {
+                if (message.getId() == ackId) {
                     found = true;
                     break;
                 }

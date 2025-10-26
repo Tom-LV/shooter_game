@@ -14,7 +14,6 @@ public class PickupManager {
      * @param type pickup type
      */
     public static void createPickup(Vector2 position, String type) {
-        System.out.println("Creating Pickup");
         switch (type) {
             case "health_pickup":
                 HealthPickup healthPickup = new HealthPickup(20);

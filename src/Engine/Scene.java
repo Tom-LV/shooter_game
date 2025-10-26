@@ -14,8 +14,8 @@ import javax.swing.*;
  * A scene class that can be extended to act as the main game panel.
  */
 public abstract class Scene extends JPanel {
-    private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<GameObject> serverObjects = new ArrayList<>();
+    private final ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private final ArrayList<GameObject> serverObjects = new ArrayList<>();
 
     private final ConcurrentLinkedQueue<Runnable> pendingUpdateActions = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Runnable> pendingDrawActions = new ConcurrentLinkedQueue<>();
@@ -42,7 +42,7 @@ public abstract class Scene extends JPanel {
     /**
      * Gets a list of local gameObjects of class.
      * @param cls class to get
-     * @return list of lical gameObjects
+     * @return list of local gameObjects
      */
     public synchronized List<GameObject> getObjectsOfClass(Class<?> cls) {
         return gameObjects.stream()
@@ -89,7 +89,7 @@ public abstract class Scene extends JPanel {
             try {
                 task.run();
             } catch (Throwable t) {
-                System.err.println("Error while applying pending network action: " + t.getMessage());
+                System.err.println("Error while applying pending draw action: " + t.getMessage());
             }
         }
 
@@ -106,7 +106,6 @@ public abstract class Scene extends JPanel {
      * Internal method to call update function for all scene gameObjects.
      */
     void update(float deltaTime) {
-
         for (GameObject gameObject : gameObjects) {
             gameObject.animationUpdate(deltaTime);
             gameObject.update(deltaTime);
@@ -127,7 +126,7 @@ public abstract class Scene extends JPanel {
             try {
                 task.run();
             } catch (Throwable t) {
-                System.err.println("Error while applying pending network action: " + t.getMessage());
+                System.err.println("Error while applying pending update action: " + t.getMessage());
             }
         }
 
@@ -151,6 +150,7 @@ public abstract class Scene extends JPanel {
                 return;
             }
            drawOrder.add(gameObject);
+           updateLayer(gameObject);
         });
     }
 
@@ -172,8 +172,9 @@ public abstract class Scene extends JPanel {
             gameObject.setOwnerUUID(Client.getClientId());
             gameObject.setLayer(gameObject.getLayer());
             gameObjects.add(gameObject);
-            Client.addObject(gameObject);
             addDrawOrder(gameObject);
+            Client.addObject(gameObject);
+
         });
     }
 
@@ -188,8 +189,9 @@ public abstract class Scene extends JPanel {
             }
             gameObject.onDestroy();
             gameObjects.remove(gameObject);
-            Client.removeObject(gameObject);
             removeDrawOrder(gameObject);
+            Client.removeObject(gameObject);
+
         });
     }
 
