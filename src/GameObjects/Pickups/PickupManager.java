@@ -8,6 +8,7 @@ import Engine.Vector2;
  */
 public class PickupManager {
 
+
     /**
      * Creates a pickup on the ground.
      * @param position pickup position

@@ -25,8 +25,8 @@ public class EnemyManager extends GameObject {
         time += deltaTime;
 
         if (time >= rng.nextFloat(1.0f, 2.0f)) {
-            for (int i = 0; i < 1; i++) {
-                spawnEnemy();
+            for (int i = 0; i < 5; i++) {
+                //spawnEnemy();
             }
         }
     }
@@ -34,13 +34,13 @@ public class EnemyManager extends GameObject {
     private void spawnEnemy() {
         List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
 
-        if (enemies.size() > 20) {
+        if (enemies.size() > 100) {
             return;
         }
 
         List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
-        if (playerObjects.size() <= 0) {
+        if (playerObjects.isEmpty()) {
             return;
         }
 

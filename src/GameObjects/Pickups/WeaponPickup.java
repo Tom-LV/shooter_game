@@ -14,6 +14,7 @@ public class WeaponPickup extends Pickup {
     float thrownTimer = 0f;
     Vector2 velocity;
 
+
     @NetEvent("throw_weapon")
     public static void weaponThrow(Vector2 position, float rotation) {
         Server.addObject(new WeaponPickup(position, rotation));
@@ -30,6 +31,7 @@ public class WeaponPickup extends Pickup {
         setSprite("pistol");
         scale = new Vector2(0.05f, 0.05f);
         setLayer(-10);
+        despawnTime = -1;
     }
 
     WeaponPickup(Vector2 position, float rotation) {
@@ -37,6 +39,7 @@ public class WeaponPickup extends Pickup {
         float rotationInRad = (float) Math.toRadians(rotation);
         this.position = position.add(Vector2.fromRotation(rotationInRad).multiply(35));
         velocity = Vector2.fromRotation(rotationInRad).normalize();
+        despawnTime = -1;
     }
 
     public WeaponPickup(Vector2 position) {
@@ -44,18 +47,34 @@ public class WeaponPickup extends Pickup {
         thrownTimer = 3f;
         speed = 0;
         velocity = new Vector2(0f, 0f);
+        despawnTime = -1;
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         thrownTimer += deltaTime;
-        position = position.add(velocity.multiply(speed * deltaTime));
+
         if (thrownTimer >= 0.5f) {
-            speed *= 0.9999f;
+
         } else {
+            position = position.add(velocity.multiply(speed * deltaTime));
+            speed *= 0.9999f;
             rotation += 600 * deltaTime;
             collision();
+        }
+
+        if (position.y < -910) {
+            position.y = -910;
+        }
+        if (position.x < -1300) {
+            position.x = -1300;
+        }
+        if (position.y > 920) {
+            position.y = 920;
+        }
+        if (position.x > 1350) {
+            position.x = 1350;
         }
 
     }

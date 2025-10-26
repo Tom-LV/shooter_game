@@ -58,6 +58,7 @@ public class Server {
                     if (uuidConnectionDataHashMap.containsKey(senderId)) {
                         connectionData = uuidConnectionDataHashMap.get(senderId);
                     } else {
+                        System.out.println(packet.getAddress());
                         connectionData = new ConnectionData(packet.getAddress(), packet.getPort(), senderId);
                         Server.pendingNetworkActions.add(() -> {
                             Server.addNewClient(connectionData);

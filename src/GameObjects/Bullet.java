@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class Bullet extends GameObject {
     float time = 0f;
-    float speed = 400f;
+    float speed = 800f;
     int damage;
     Vector2 velocity = new Vector2(0f, 0f);
 
@@ -42,7 +42,7 @@ public class Bullet extends GameObject {
         
         for (int i = 0; i < 8; i++) {
             float randomRotation = rotation + rng.nextFloat(-25.0f, 25.0f);
-            Server.addObject(new Bullet(bulletPosition, randomRotation, 5));
+            Server.addObject(new Bullet(bulletPosition, randomRotation, 10));
         }
     }
 
@@ -56,7 +56,7 @@ public class Bullet extends GameObject {
         Random rng = new Random();
         Vector2 offset = new Vector2(50f, -6f).rotate(rotation);
         Vector2 bulletPosition = position.add(offset);
-        Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-5.0f, 5.0f), 5));
+        Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-5.0f, 5.0f), 15));
     }
 
     /**
@@ -94,8 +94,22 @@ public class Bullet extends GameObject {
             }
         }
 
+        shootPlayer();
+
         if (time >= 2) {
             Server.removeObject(this);
+        }
+    }
+
+    private void shootPlayer() {
+        List<GameObject> gameObjects = Server.getClientObjectsOfClass(Player.class);
+
+        for (GameObject gameObject : gameObjects) {
+            float distance = gameObject.position.subtract(position).length();
+            if (distance <= 9f) {
+                Server.sendMessage("player_hit", gameObject.getOwnerUUID(), damage);
+                Server.removeObject(this);
+            }
         }
     }
 }

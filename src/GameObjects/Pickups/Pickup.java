@@ -36,7 +36,7 @@ public abstract class Pickup extends GameObject {
             onPickUp(closestPlayer);
         }
 
-        if (time >= despawnTime) {
+        if (time >= despawnTime && despawnTime != -1) {
             Server.removeObject(this);
         }
     }

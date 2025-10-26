@@ -15,7 +15,7 @@ public class Enemy extends GameObject {
     double time = 0;
     float speed = 75f;
     Vector2 velocity = new Vector2(0f, 0f);
-    int health = 50;
+    int health = 20;
     float hitAnim = 0f;
     float attackTimer = 0f;
     Random rng;
