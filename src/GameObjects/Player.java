@@ -26,6 +26,7 @@ public class Player extends GameObject {
     static AudioClip hurtSfx = new AudioClip("src\\Assets\\audio\\hurt.wav");
     ArrayList<Animation> animations;
 
+    int ammo = 20;
     int health = 100;
     int maxHealth = 100;
     int selectedWeapon = 0;
@@ -123,8 +124,20 @@ public class Player extends GameObject {
         }
     }
 
+    @NetEvent("ammo_pickup")
+    public static void ammoPickup(int ammo) {
+        List<GameObject> players = Engine.getCurrentScene().getObjectsOfClass(Player.class);
+        Player player;
+        if (players.isEmpty()) {
+            return;
+        }
+        AudioPlayer.playAudio(Player.pickupSfx, false);
+        player = (Player) players.get(0);
+        player.ammo += ammo;
+    }
+
     @NetEvent("weapon_pickup")
-    public static void pickupWeapon() {
+    public static void pickupWeapon(int weaponIndex) {
         List<GameObject> players = Engine.getCurrentScene().getObjectsOfClass(Player.class);
         Player player;
         if (players.isEmpty()) {
@@ -132,7 +145,7 @@ public class Player extends GameObject {
         }
         player = (Player) players.get(0);
         player.hasWeapon = true;
-        player.selectWeapon(0);
+        player.selectWeapon(weaponIndex);
     }
 
     @Override
@@ -177,17 +190,6 @@ public class Player extends GameObject {
             invTimer -= deltaTime;
         }
 
-        if (hasWeapon) {
-            if (Input.isKeyPressed(KeyEvent.VK_1)) {
-                selectWeapon(0);
-            } else if (Input.isKeyPressed(KeyEvent.VK_2)) {
-                selectWeapon(1);
-            } else if (Input.isKeyPressed(KeyEvent.VK_3)) {
-                selectWeapon(2);
-            }
-        }
-
-
         // Movement
         if (Input.isKeyPressed(KeyEvent.VK_W)) {
             velocity.y -= speed;
@@ -207,7 +209,12 @@ public class Player extends GameObject {
         rotation = Input.mouse.getWorldPosition().subtract(position).getRotation();
 
         // Shooting
-        if (Input.mouse.isClicked(0) && time >= reloadTime && hasWeapon) {
+        if (Input.mouse.isClicked(0) && time >= reloadTime && hasWeapon && ammo > 0) {
+            if (selectedWeapon == 1) {
+                ammo -= 8;
+            } else {
+                ammo--;
+            }
             AudioPlayer.playAudio(shootSfx, false);
             Vector2 bulletPosition = position;
             Client.sendMessage(weaponAttackType, bulletPosition, rotation);
@@ -217,7 +224,7 @@ public class Player extends GameObject {
 
         if (Input.isKeyPressed(KeyEvent.VK_Q) && hasWeapon) {
             hasWeapon = false;
-            Client.sendMessage("throw_weapon", position, rotation);
+            Client.sendMessage("throw_weapon", position, rotation, selectedWeapon);
             selectWeapon(-1);
         }
 

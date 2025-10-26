@@ -11,44 +11,20 @@ import java.util.Random;
  * An enemy manager that spawns enemies randomly on the map.
  */
 public class EnemyManager extends GameObject {
-
-    private float time = 0;
     private Random rng;
 
     @Override
     protected void setup() {
         rng = new Random();
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        time += deltaTime;
-
-        if (time >= rng.nextFloat(1.0f, 2.0f)) {
-            for (int i = 0; i < 5; i++) {
-                //spawnEnemy();
-            }
+        for (int i = 0; i < 5; i++) {
+            createSpawner();
         }
     }
 
-    private void spawnEnemy() {
-        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
-
-        if (enemies.size() > 100) {
-            return;
-        }
-
-        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
-
-        if (playerObjects.isEmpty()) {
-            return;
-        }
-
-        GameObject player = playerObjects.get(rng.nextInt(0, playerObjects.size()));
-        float x = player.position.x + rng.nextFloat(-300, 300);
-        float y = player.position.y + rng.nextFloat(-300, 300);
-        Enemy enemy = new Enemy(new Vector2(x, y));
-        Server.addObject(enemy);
-        time = 0;
+    private void createSpawner() {
+        float x = rng.nextFloat(-800, 800);
+        float y = rng.nextFloat(-800, 800);
+        EnemySpawner enemySpawner = new EnemySpawner(new Vector2(x, y));
+        Server.addObject(enemySpawner);
     }
 }

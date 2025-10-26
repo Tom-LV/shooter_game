@@ -4,6 +4,8 @@ import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Vector2;
+import Interfaces.Damagable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -83,18 +85,20 @@ public class Bullet extends GameObject {
         float rotationInRad = (float) Math.toRadians(rotation);
         position = position.add(Vector2.fromRotation(rotationInRad).multiply(speed * deltaTime));
 
-        List<GameObject> gameObjects = Server.getServerObjectsOfClass(Enemy.class);
+        List<GameObject> gameObjects = new ArrayList<>(Server.getServerObjectsOfClass(Enemy.class));
+        gameObjects.addAll(Server.getServerObjectsOfClass(EnemySpawner.class));
 
         for (GameObject gameObject : gameObjects) {
             float distance = gameObject.position.subtract(position).length();
             if (distance <= 9f) {
-                Enemy enemy = (Enemy) gameObject;
-                enemy.hit(damage);
+                if (gameObject instanceof Damagable d) {
+                    d.takeDamage(damage);
+                }
                 Server.removeObject(this);
             }
         }
 
-        shootPlayer();
+        // shootPlayer();
 
         if (time >= 2) {
             Server.removeObject(this);

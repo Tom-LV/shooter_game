@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Displays weapon icons below minimap.
  */
 public class WeaponSelect extends GameObject {
-    static ArrayList<WeaponSelect> weaponIcons = new ArrayList<>();
+    static WeaponSelect weaponIcon;
     static int selectedWeapon = -1;
     BufferedImage image;
 
@@ -21,26 +21,14 @@ public class WeaponSelect extends GameObject {
      * @param scene scene to create icons in
      */
     public static void createIcons(Scene scene) {
-        WeaponSelect pistol = new WeaponSelect("pistol_icon");
-        WeaponSelect shotgun = new WeaponSelect("shotgun_icon");
-        WeaponSelect rifle = new WeaponSelect("rifle_icon");
+        WeaponSelect pistol = new WeaponSelect();
 
-        weaponIcons.add(pistol);
-        weaponIcons.add(shotgun);
-        weaponIcons.add(rifle);
+        weaponIcon = pistol;
+        pistol.position.y = 40;
+        pistol.position.x = 40;
         selectWeapon(0);
 
         scene.addNetworkObject(pistol);
-        scene.addNetworkObject(shotgun);
-        scene.addNetworkObject(rifle);
-
-        float xPos = 40;
-
-        for (WeaponSelect weapon : weaponIcons) {
-            weapon.position.y = 40;
-            weapon.position.x = xPos;
-            xPos += 65;
-        }
     }
 
     /**
@@ -51,15 +39,27 @@ public class WeaponSelect extends GameObject {
         if (weaponIndex == selectedWeapon) {
             return;
         }
-        for (WeaponSelect weapon : weaponIcons) {
-            weapon.scale = new Vector2(0.04f, 0.04f);
+        switch (weaponIndex) {
+            case 0:
+                weaponIcon.setSprite("pistol_icon");
+                break;
+            case 1:
+                weaponIcon.setSprite("shotgun_icon");
+                break;
+            case 2:
+                weaponIcon.setSprite("rifle_icon");
+                break;
+            default:
+                weaponIcon.setSprite(null);
+                break;
         }
-        if (weaponIndex == -1) {
+        if (weaponIcon.currentSprite == null) {
+            weaponIcon.image = null;
+            selectedWeapon = -1;
             return;
         }
-
-        WeaponSelect weapon = weaponIcons.get(weaponIndex);
-        weapon.scale = new Vector2(0.05f, 0.05f);
+        weaponIcon.image = weaponIcon.currentSprite.getImage();
+        weaponIcon.setSprite(null);
         selectedWeapon = weaponIndex;
     }
 
@@ -79,13 +79,9 @@ public class WeaponSelect extends GameObject {
 
     /**
      * Create a weapon icon.
-     * @param imageName icon image
      */
-    WeaponSelect(String imageName) {
+    WeaponSelect() {
         scale = new Vector2(0.05f, 0.05f);
-        setSprite(imageName);
-        image = currentSprite.getImage();
-        setSprite(null);
         setLayer(1000);
     }
 }

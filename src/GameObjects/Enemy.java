@@ -4,6 +4,8 @@ import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Pickups.PickupManager;
+import Interfaces.Damagable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,9 +13,9 @@ import java.util.Random;
 /**
  * A basic enemy class.
  */
-public class Enemy extends GameObject {
+public class Enemy extends GameObject implements Damagable {
     double time = 0;
-    float speed = 75f;
+    float speed = 150f;
     Vector2 velocity = new Vector2(0f, 0f);
     int health = 20;
     float hitAnim = 0f;
@@ -56,7 +58,10 @@ public class Enemy extends GameObject {
             }
         }
 
-        goToClosestPlayer(deltaTime, closestPlayer, closestDistance);
+        if (closestDistance <= 300f) {
+            goToClosestPlayer(deltaTime, closestPlayer, closestDistance);
+        }
+
 
         collision();
 
@@ -107,26 +112,32 @@ public class Enemy extends GameObject {
         } else {
             velocity = velocity.add(new Vector2(speed, 0f).rotate(rotation));
         }
-    } 
+    }
 
-    /**
-     * Called when this enemy takes damage.
-     * @param damage ddamage to take
-     */
-    public void hit(int damage) {
-        health -= damage;
-        hitAnim = 0.05f;
-        scale = new Vector2(0.14f, 0.14f);
-        setSprite("zombie_hit");
+    @Override
+    public void takeDamage(int amount) {
+        health -= amount;
         if (health <= 0) {
-            Server.removeObject(this);
+            onKill();
+        } else {
+            onDamage(amount);
         }
     }
 
     @Override
-    public void onDestroy() {
-        if (rng.nextFloat() >= 0.5f) {
+    public void onDamage(int amount) {
+        hitAnim = 0.05f;
+        scale = new Vector2(0.14f, 0.14f);
+        setSprite("zombie_hit");
+    }
+
+    @Override
+    public void onKill() {
+        if (rng.nextFloat() >= 0.75f) {
             PickupManager.createPickup(position, "health_pickup");
+        } else if (rng.nextFloat() >= 0.5f) {
+            PickupManager.createPickup(position, "ammo_pickup");
         }
+        Server.removeObject(this);
     }
 }

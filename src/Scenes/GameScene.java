@@ -22,9 +22,11 @@ public class GameScene extends Scene {
         Player player = new Player(new Vector2(0, 0));
         addNetworkObject(player);
         addNetworkObject(new HealthBar(player));
+        addNetworkObject(new AmmoLabel(player));
 
-        Server.addObject(new WeaponPickup(new Vector2(0, -100)));
-        Server.addObject(new WeaponPickup(new Vector2(0, 100)));
+        Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
+        Server.addObject(new WeaponPickup(new Vector2(0, -100), 1));
+        Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
         Server.addObject(new EnemyManager());
         Server.addObject(new Background());
     }

@@ -6,6 +6,7 @@ import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Enemy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WeaponPickup extends Pickup {
@@ -13,23 +14,59 @@ public class WeaponPickup extends Pickup {
     float speed = 400f;
     float thrownTimer = 0f;
     Vector2 velocity;
+    int weaponIndex = 0;
+    boolean pierce = true;
+    int damage = 10;
+    ArrayList<GameObject> damaged = new ArrayList<>();
 
 
     @NetEvent("throw_weapon")
-    public static void weaponThrow(Vector2 position, float rotation) {
-        Server.addObject(new WeaponPickup(position, rotation));
+    public static void weaponThrow(Vector2 position, float rotation, int weapon) {
+        WeaponPickup weaponPickup = new WeaponPickup(position, rotation);
+        weaponPickup.setWeapon(weapon);
+        Server.addObject(weaponPickup);
+
+    }
+
+    void setWeapon(int weaponIndex) {
+        this.weaponIndex = weaponIndex;
+        switch (weaponIndex) {
+            case 0:
+                setSprite("pistol");
+                scale = new Vector2(0.05f, 0.05f);
+                pierce = false;
+                break;
+            case 1:
+                setSprite("shotgun");
+                scale = new Vector2(0.07f, 0.07f);
+                pierce = true;
+                speed = 600f;
+                break;
+            case 2:
+                setSprite("rifle");
+                scale = new Vector2(0.07f, 0.07f);
+                pierce = false;
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void onPickUp(GameObject player) {
-        Server.sendMessage("weapon_pickup", player.getOwnerUUID());
+        Server.sendMessage("weapon_pickup", player.getOwnerUUID(), weaponIndex);
         Server.removeObject(this);
+        List<GameObject> weaponPickups = Server.getServerObjectsOfClass(WeaponPickup.class);
+        for (GameObject gameObject : weaponPickups){
+            WeaponPickup weaponPickup = (WeaponPickup) gameObject;
+            weaponPickup.canPickUp = false;
+            Server.removeObject(weaponPickup);
+        }
     }
 
     @Override
     protected void setup() {
-        setSprite("pistol");
-        scale = new Vector2(0.05f, 0.05f);
+
         setLayer(-10);
         despawnTime = -1;
     }
@@ -42,12 +79,14 @@ public class WeaponPickup extends Pickup {
         despawnTime = -1;
     }
 
-    public WeaponPickup(Vector2 position) {
+    public WeaponPickup(Vector2 position, int weaponIndex) {
         this.position = position;
         thrownTimer = 3f;
         speed = 0;
         velocity = new Vector2(0f, 0f);
         despawnTime = -1;
+        this.weaponIndex = weaponIndex;
+        setWeapon(weaponIndex);
     }
 
     @Override
@@ -55,26 +94,35 @@ public class WeaponPickup extends Pickup {
         super.update(deltaTime);
         thrownTimer += deltaTime;
 
-        if (thrownTimer >= 0.5f) {
-
-        } else {
+        if (thrownTimer < 0.5f) {
             position = position.add(velocity.multiply(speed * deltaTime));
-            speed *= 0.9999f;
             rotation += 600 * deltaTime;
             collision();
+        } else if (weaponIndex == 1) {
+            if (thrownTimer < 1.5f) {
+                damaged.clear();
+                position = position.add(velocity.multiply(-speed * deltaTime));
+                rotation += 600 * deltaTime;
+                collision();
+            }
         }
+
 
         if (position.y < -910) {
             position.y = -910;
+            velocity = new Vector2(velocity.x, -velocity.y);
         }
         if (position.x < -1300) {
             position.x = -1300;
+            velocity = new Vector2(-velocity.x, velocity.y);
         }
         if (position.y > 920) {
             position.y = 920;
+            velocity = new Vector2(velocity.x, -velocity.y);
         }
         if (position.x > 1350) {
             position.x = 1350;
+            velocity = new Vector2(-velocity.x, velocity.y);
         }
 
     }
@@ -82,10 +130,17 @@ public class WeaponPickup extends Pickup {
     private void collision() {
         List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
         for (GameObject enemy : enemies) {
+            if (damaged.contains(enemy)) {
+                continue;
+            }
             Vector2 distance = enemy.position.subtract(position);
             if (distance.length() < 15f) {
                 Enemy e = (Enemy) enemy;
-                e.hit(10);
+                damaged.add(e);
+                e.takeDamage(damage);
+                if (pierce) {
+                    continue;
+                }
                 position = position.subtract(distance.normalize().multiply(30 - distance.length()));
                 float dot = velocity.dot(distance.normalize());
                 velocity = velocity.subtract(distance.normalize().multiply(2 * dot));

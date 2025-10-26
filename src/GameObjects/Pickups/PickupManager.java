@@ -22,8 +22,12 @@ public class PickupManager {
                 Server.addObject(healthPickup);
                 break;
             case "weapon_pickup":
-                WeaponPickup weaponPickup = new WeaponPickup(position);
+                WeaponPickup weaponPickup = new WeaponPickup(position, 0);
                 Server.addObject(weaponPickup);
+            case "ammo_pickup":
+                AmmoPickup ammoPickup = new AmmoPickup();
+                ammoPickup.position = position;
+                Server.addObject(ammoPickup);
             default:
                 break;
         }
