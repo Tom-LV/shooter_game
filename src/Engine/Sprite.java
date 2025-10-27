@@ -1,17 +1,20 @@
 package Engine;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 /**
  * Class for managing images for gameObject rendering.
  */
 public class Sprite {
     Vector2 pivot;
-    BufferedImage image;
+    Vector2 dimensions;
+    private final Image image;
     int index;
 
     /**
@@ -20,8 +23,9 @@ public class Sprite {
      * @param pivot image pivot
      * @param index sprite index
      */
-    Sprite(BufferedImage image, Vector2 pivot, int index) {
+    Sprite(Image image, Vector2 pivot, int index) {
         this.image = image;
+        this.dimensions = new Vector2(image.getWidth(null), image.getHeight(null));
         if (pivot == null) {
             this.pivot = new Vector2(0.5f, 0.5f);
         }
@@ -29,12 +33,16 @@ public class Sprite {
         this.index = index;
     }
 
-    public BufferedImage getImage() {
+    public Image getImage() {
         return image;
     }
 
     public Vector2 getPivot() {
         return pivot;
+    }
+
+    public Vector2 getDimensions() {
+        return dimensions;
     }
 
     int getIndex() {
@@ -77,15 +85,20 @@ public class Sprite {
      * @param pivot image pivot
      */
     public static void loadImage(String name, String path, Vector2 pivot) {
-        try {
-            BufferedImage image = ImageIO.read(new File(path));
-            if (image != null) {
-                int index = spriteIndexMap.size();
-                sprites.put(index, new Sprite(image, pivot, index));
-                spriteIndexMap.put(name, index);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Image image = new ImageIcon(path).getImage();
+        if (image != null) {
+            int index = spriteIndexMap.size();
+            sprites.put(index, new Sprite(image, pivot, index));
+            spriteIndexMap.put(name, index);
+        }
+    }
+
+    public static void loadImage(String name, String path) {
+        Image image = new ImageIcon(path).getImage();
+        if (image != null) {
+            int index = spriteIndexMap.size();
+            sprites.put(index, new Sprite(image, new Vector2(0.5f, 0.5f), index));
+            spriteIndexMap.put(name, index);
         }
     }
 }

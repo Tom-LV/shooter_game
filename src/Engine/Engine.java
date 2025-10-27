@@ -98,18 +98,19 @@ public class Engine {
         return running;
     }
 
-    public static float getDeltaTIme() {
+    public static float getDeltaTime() {
         return Engine.deltaTime.toNanos() / 1_000_000_000f;
+
     }
 
     /**
      * Updates game state.
      */
     public static void update() {
-        Server.update(Engine.getDeltaTIme());
-        Client.update(Engine.getDeltaTIme());
+        Server.update((float) Engine.getDeltaTime());
+        Client.update((float) Engine.getDeltaTime());
 
-        currentScene.update(Engine.getDeltaTIme());
+        currentScene.update((float) Engine.getDeltaTime());
 
         deltaTime = Duration.between(beginTime, Instant.now());
         beginTime = Instant.now();

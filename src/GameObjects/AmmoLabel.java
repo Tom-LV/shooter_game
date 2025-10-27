@@ -1,5 +1,6 @@
 package GameObjects;
 
+import Engine.Engine;
 import Engine.GameObject;
 import Engine.Vector2;
 

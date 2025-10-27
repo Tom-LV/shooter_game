@@ -30,6 +30,7 @@ public class Enemy extends GameObject implements Damagable {
     protected void setup() {
         rng = new Random();
         setSprite("zombie");
+        rotation = rng.nextInt(360);
         //setRotation(45);
         scale = new Vector2(0.15f, 0.15f);
     }
@@ -60,6 +61,9 @@ public class Enemy extends GameObject implements Damagable {
 
         if (closestDistance <= 300f) {
             goToClosestPlayer(deltaTime, closestPlayer, closestDistance);
+        } else {
+            rotation += rng.nextFloat(-400.0f, 450.0f) * deltaTime;
+            velocity = velocity.add(new Vector2(speed * 0.25f, 0f).rotate(rotation));
         }
 
 
@@ -110,6 +114,7 @@ public class Enemy extends GameObject implements Damagable {
                 attackTimer = 0;
             }
         } else {
+
             velocity = velocity.add(new Vector2(speed, 0f).rotate(rotation));
         }
     }

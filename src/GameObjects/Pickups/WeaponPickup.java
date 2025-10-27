@@ -5,6 +5,7 @@ import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Enemy;
+import GameObjects.WeaponManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class WeaponPickup extends Pickup {
         WeaponPickup weaponPickup = new WeaponPickup(position, rotation);
         weaponPickup.setWeapon(weapon);
         Server.addObject(weaponPickup);
-
+        WeaponManager.dropWeapon();
     }
 
     void setWeapon(int weaponIndex) {
@@ -54,9 +55,13 @@ public class WeaponPickup extends Pickup {
 
     @Override
     public void onPickUp(GameObject player) {
+        if (WeaponManager.hasWeapon(player)) {
+            return;
+        }
         Server.sendMessage("weapon_pickup", player.getOwnerUUID(), weaponIndex);
         Server.removeObject(this);
         List<GameObject> weaponPickups = Server.getServerObjectsOfClass(WeaponPickup.class);
+        WeaponManager.weaponPickup(player);
         for (GameObject gameObject : weaponPickups){
             WeaponPickup weaponPickup = (WeaponPickup) gameObject;
             weaponPickup.canPickUp = false;

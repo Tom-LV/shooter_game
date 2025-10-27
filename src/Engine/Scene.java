@@ -14,8 +14,9 @@ import javax.swing.*;
  * A scene class that can be extended to act as the main game panel.
  */
 public abstract class Scene extends JPanel {
-    private final ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private final ArrayList<GameObject> networkObjects = new ArrayList<>();
     private final ArrayList<GameObject> serverObjects = new ArrayList<>();
+    private final ArrayList<GameObject> localObjects = new ArrayList<>();
 
     private final ConcurrentLinkedQueue<Runnable> pendingUpdateActions = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Runnable> pendingDrawActions = new ConcurrentLinkedQueue<>();
@@ -45,7 +46,7 @@ public abstract class Scene extends JPanel {
      * @return list of local gameObjects
      */
     public synchronized List<GameObject> getObjectsOfClass(Class<?> cls) {
-        return gameObjects.stream()
+        return networkObjects.stream()
             .filter(o -> o.isOfClass(cls))
             .toList();
     }
@@ -106,7 +107,14 @@ public abstract class Scene extends JPanel {
      * Internal method to call update function for all scene gameObjects.
      */
     void update(float deltaTime) {
-        for (GameObject gameObject : gameObjects) {
+        for (GameObject gameObject : networkObjects) {
+            gameObject.animationUpdate(deltaTime);
+            gameObject.update(deltaTime);
+            if (gameObject.needsLayerChange) {
+                addToLayerChange(gameObject);
+            }
+        }
+        for (GameObject gameObject : localObjects) {
             gameObject.animationUpdate(deltaTime);
             gameObject.update(deltaTime);
             if (gameObject.needsLayerChange) {
@@ -160,18 +168,41 @@ public abstract class Scene extends JPanel {
         });
     }
 
+    public void addObject(GameObject gameObject) {
+        pendingUpdateActions.add(() -> {
+            if (localObjects.contains(gameObject)) {
+                return;
+            }
+            gameObject.setOwnerUUID(Client.getClientId());
+            gameObject.setLayer(gameObject.getLayer());
+            localObjects.add(gameObject);
+            addDrawOrder(gameObject);
+        });
+    }
+
+    void destroyObject(GameObject gameObject) {
+        pendingUpdateActions.add(() -> {
+            if (!localObjects.contains(gameObject)) {
+                return;
+            }
+            gameObject.onDestroy();
+            localObjects.remove(gameObject);
+            removeDrawOrder(gameObject);
+        });
+    }
+
     /**
      * Add a gameObject to scene.
      * @param gameObject object to add
      */
     public void addNetworkObject(GameObject gameObject) {
         pendingUpdateActions.add(() -> {
-            if (gameObjects.contains(gameObject)) {
+            if (networkObjects.contains(gameObject)) {
                 return;
             }
             gameObject.setOwnerUUID(Client.getClientId());
             gameObject.setLayer(gameObject.getLayer());
-            gameObjects.add(gameObject);
+            networkObjects.add(gameObject);
             addDrawOrder(gameObject);
             Client.addObject(gameObject);
 
@@ -184,11 +215,11 @@ public abstract class Scene extends JPanel {
      */
     void destroyNetworkObject(GameObject gameObject) {
         pendingUpdateActions.add(() -> {
-            if (!gameObjects.contains(gameObject)) {
+            if (!networkObjects.contains(gameObject)) {
                 return;
             }
             gameObject.onDestroy();
-            gameObjects.remove(gameObject);
+            networkObjects.remove(gameObject);
             removeDrawOrder(gameObject);
             Client.removeObject(gameObject);
 

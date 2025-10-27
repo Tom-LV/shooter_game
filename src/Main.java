@@ -82,6 +82,24 @@ public class Main {
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("shotgun_icon", artAssetPath + "shotgun_icon.png",
                 new Vector2(0.5f, 0.5f));
+
+        // Roads
+        Sprite.loadImage("road_0000", artAssetPath + "roads\\road_0000.png");
+        Sprite.loadImage("road_0001", artAssetPath + "roads\\road_0001.png");
+        Sprite.loadImage("road_0010", artAssetPath + "roads\\road_0010.png");
+        Sprite.loadImage("road_0100", artAssetPath + "roads\\road_0100.png");
+        Sprite.loadImage("road_1000", artAssetPath + "roads\\road_1000.png");
+        Sprite.loadImage("road_0011", artAssetPath + "roads\\road_0011.png");
+        Sprite.loadImage("road_0110", artAssetPath + "roads\\road_0110.png");
+        Sprite.loadImage("road_1100", artAssetPath + "roads\\road_1100.png");
+        Sprite.loadImage("road_1010", artAssetPath + "roads\\road_1010.png");
+        Sprite.loadImage("road_1001", artAssetPath + "roads\\road_1001.png");
+        Sprite.loadImage("road_0101", artAssetPath + "roads\\road_0101.png");
+        Sprite.loadImage("road_1110", artAssetPath + "roads\\road_1110.png");
+        Sprite.loadImage("road_0111", artAssetPath + "roads\\road_0111.png");
+        Sprite.loadImage("road_1011", artAssetPath + "roads\\road_1011.png");
+        Sprite.loadImage("road_1101", artAssetPath + "roads\\road_1101.png");
+        Sprite.loadImage("road_1111", artAssetPath + "roads\\road_1111.png");
     }
 
     public void run() {

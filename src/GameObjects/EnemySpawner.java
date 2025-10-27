@@ -24,14 +24,15 @@ public class EnemySpawner extends GameObject implements Damagable {
         rng = new Random();
         setSprite("zombie");
         scale = new Vector2(0.3f, 0.3f);
+        setLayer(-99);
     }
 
     @Override
     public void update(float deltaTime) {
         time += deltaTime;
 
-        if (time >= rng.nextFloat(15.0f, 20.0f)) {
-            for (int i = 0; i < 10; i++) {
+        if (time >= rng.nextFloat(1.0f, 2.0f)) {
+            for (int i = 0; i < 1; i++) {
                 spawnEnemy();
             }
         }

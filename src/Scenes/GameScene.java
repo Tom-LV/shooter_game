@@ -17,17 +17,19 @@ public class GameScene extends Scene {
     @Override
     public void setupScene() {
         setBackground(new Color(35, 42, 46));
-        
-        WeaponSelect.createIcons(this);
+
         Player player = new Player(new Vector2(0, 0));
         addNetworkObject(player);
         addNetworkObject(new HealthBar(player));
-        addNetworkObject(new AmmoLabel(player));
+
+        WeaponSelect.createIcons(this);
+        addObject(new AmmoLabel(player));
+        addObject(new TileMap());
 
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
         Server.addObject(new WeaponPickup(new Vector2(0, -100), 1));
         Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
         Server.addObject(new EnemyManager());
-        Server.addObject(new Background());
+
     }
 }

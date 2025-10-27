@@ -2,8 +2,10 @@ package GameObjects;
 
 import Engine.GameObject;
 import Engine.Scene;
+import Engine.Sprite;
 import Engine.Vector2;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 public class WeaponSelect extends GameObject {
     static WeaponSelect weaponIcon;
     static int selectedWeapon = -1;
-    BufferedImage image;
+    Sprite sprite;
 
     /**
      * Create icons in scene.
@@ -26,9 +28,9 @@ public class WeaponSelect extends GameObject {
         weaponIcon = pistol;
         pistol.position.y = 40;
         pistol.position.x = 40;
-        selectWeapon(0);
+        selectWeapon(-1);
 
-        scene.addNetworkObject(pistol);
+        scene.addObject(pistol);
     }
 
     /**
@@ -51,30 +53,26 @@ public class WeaponSelect extends GameObject {
                 break;
             default:
                 weaponIcon.setSprite(null);
+                weaponIndex = -1;
                 break;
         }
-        if (weaponIcon.currentSprite == null) {
-            weaponIcon.image = null;
-            selectedWeapon = -1;
-            return;
-        }
-        weaponIcon.image = weaponIcon.currentSprite.getImage();
+        weaponIcon.sprite = weaponIcon.currentSprite;
         weaponIcon.setSprite(null);
         selectedWeapon = weaponIndex;
     }
 
     @Override
     protected void draw(Graphics2D g2d) {
-        if (image == null) {
+        if (sprite == null) {
             return;
         }
         AffineTransform at = new AffineTransform();
         at.translate(position.x, position.y);
         at.rotate(Math.toRadians(rotation));
         at.scale(scale.x, scale.y);
-        at.translate(-image.getWidth() * 0.5f, 
-            -image.getHeight() * 0.5f);
-        g2d.drawImage(image, at, null);
+        at.translate(-sprite.getDimensions().x * 0.5f,
+            -sprite.getDimensions().y * 0.5f);
+        g2d.drawImage(sprite.getImage(), at, null);
     }
 
     /**

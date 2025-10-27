@@ -25,7 +25,6 @@ public class GameObject implements Serializable {
     public float rotation = 0.0f;
     private int layerIndex = 0;
     public Sprite currentSprite;
-    private BufferedImage currentImage;
     private Class<?> myClass;
     private UUID ownerUUID;
 
@@ -153,21 +152,10 @@ public class GameObject implements Serializable {
      */
     public void setSprite(String name) {
         currentSprite = Sprite.getSprite(name);
-        if (currentSprite == null) {
-            currentImage = null;
-        } else {
-            currentImage = currentSprite.getImage();
-        }
     }
 
     private void setSprite(int index) {
         currentSprite = Sprite.getSpriteFromIndex(index);
-        if (currentSprite == null) {
-            currentImage = null;
-        } else {
-            currentImage = currentSprite.getImage();
-        }
-        
     }
 
     public void setRotation(float degrees) {
@@ -179,7 +167,7 @@ public class GameObject implements Serializable {
      * @param g2d the Graphics2D component of the game panel
      */
     protected void draw(Graphics2D g2d) {
-        if (currentImage == null) {
+        if (currentSprite == null) {
             return;
         }
         AffineTransform at = new AffineTransform();
@@ -187,15 +175,15 @@ public class GameObject implements Serializable {
         Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2, 
             Engine.getCurrentScene().getHeight() / 2);
         
-        Vector2 panelPos = position.subtract(Camera.currentCamera.position);
+        Vector2 panelPos = position.subtract(Camera.currentCamera.position).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
         at.translate(panelPos.x, panelPos.y);
         at.rotate(Math.toRadians(rotation));
-        at.scale(scale.x, scale.y);
-        at.translate(-currentImage.getWidth() * currentSprite.pivot.x, 
-            -currentImage.getHeight() * currentSprite.pivot.y);
+        at.scale(scale.x / Camera.currentCamera.zoom, scale.y / Camera.currentCamera.zoom);
+        at.translate(-currentSprite.getDimensions().x * currentSprite.pivot.x,
+            -currentSprite.getDimensions().y * currentSprite.pivot.y);
 
-        g2d.drawImage(currentImage, at, null);
+        g2d.drawImage(currentSprite.getImage(), at, null);
     }
 
     protected void setup() {

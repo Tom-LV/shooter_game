@@ -7,7 +7,7 @@ public class Camera {
     public static Camera currentCamera;
 
     public Vector2 position = new Vector2(0f, 0f);
-    public float zoom = 100.0f;
+    public float zoom = 1f;
 
     Camera() {
         currentCamera = this;

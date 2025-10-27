@@ -3,6 +3,7 @@ package GameObjects.Pickups;
 import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
+import GameObjects.WeaponManager;
 
 /**
  * A health pickup.
@@ -24,6 +25,9 @@ public class HealthPickup extends Pickup {
 
     @Override
     public void onPickUp(GameObject player) {
+        if (WeaponManager.hasWeapon(player)) {
+            return;
+        }
         Server.sendMessage("health_pickup", player.getOwnerUUID(), givenHealth);
         Server.removeObject(this);
     }

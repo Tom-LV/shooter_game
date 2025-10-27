@@ -16,13 +16,13 @@ public class EnemyManager extends GameObject {
     @Override
     protected void setup() {
         rng = new Random();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             createSpawner();
         }
     }
 
     private void createSpawner() {
-        float x = rng.nextFloat(-800, 800);
+        float x = rng.nextFloat(-1200, 1200);
         float y = rng.nextFloat(-800, 800);
         EnemySpawner enemySpawner = new EnemySpawner(new Vector2(x, y));
         Server.addObject(enemySpawner);
