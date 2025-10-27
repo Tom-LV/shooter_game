@@ -188,6 +188,7 @@ public abstract class Scene extends JPanel {
             gameObject.onDestroy();
             localObjects.remove(gameObject);
             removeDrawOrder(gameObject);
+            gameObject.cleanUp();
         });
     }
 
@@ -222,7 +223,7 @@ public abstract class Scene extends JPanel {
             networkObjects.remove(gameObject);
             removeDrawOrder(gameObject);
             Client.removeObject(gameObject);
-
+            gameObject.cleanUp();
         });
     }
 
@@ -246,6 +247,7 @@ public abstract class Scene extends JPanel {
         pendingUpdateActions.add(() -> {
             serverObjects.remove(gameObject);
             removeDrawOrder(gameObject);
+            gameObject.cleanUp();
         });
     }
 }

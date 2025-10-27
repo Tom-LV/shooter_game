@@ -1,10 +1,10 @@
 package Engine;
 
-import Engine.Networking.NetMessage;
-import Engine.Networking.Network;
+import Engine.Physics.Collider;
+import Engine.Physics.PhysicsManager;
+
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 
 /**
- * Abstract GameObject that exsists in scenes.
+ * Abstract GameObject that exists in scenes.
  */
 public class GameObject implements Serializable {
     private static final float LERP_SPEED = 10.0f;
@@ -25,8 +25,9 @@ public class GameObject implements Serializable {
     public float rotation = 0.0f;
     private int layerIndex = 0;
     public Sprite currentSprite;
-    private Class<?> myClass;
+    private final Class<?> myClass;
     private UUID ownerUUID;
+    private Collider collider;
 
     private boolean playingAnimation = false;
     boolean needsLayerChange = false;
@@ -139,10 +140,9 @@ public class GameObject implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof GameObject)) {
+        if (!(obj instanceof GameObject that)) {
             return false;
         }
-        GameObject that = (GameObject) obj;
         return id.equals(that.id);
     }
 
@@ -186,13 +186,9 @@ public class GameObject implements Serializable {
         g2d.drawImage(currentSprite.getImage(), at, null);
     }
 
-    protected void setup() {
-        return;
-    }
+    protected void setup() {}
 
-    public void onDestroy() {
-        return;
-    }
+    public void onDestroy() {}
 
     public void update(float deltaTime) {
 
@@ -285,6 +281,34 @@ public class GameObject implements Serializable {
         Class<?> cls = ClassManager.getClassFromIndex(classIndex);
 
         return new GameObject(id, position, scale, rotation, imageIndex, cls, ownerId, layerIndex);
+    }
+
+    public void addCollider(Collider collider) {
+        this.collider = collider;
+        collider.setParent(this);
+        collider.onCollision(this::onCollision);
+        collider.onCollisionEnter(this::onCollisionEnter);
+        collider.onCollisionExit(this::onCollisionExit);
+        PhysicsManager.addCollider(collider);
+    }
+
+    public void cleanUp() {
+        if (this.collider != null) {
+            PhysicsManager.removeCollider(this.collider);
+            this.collider.clearListeners();
+            this.collider = null;
+
+        }
+    }
+
+    public void onCollision(Collider collider) {
+
+    }
+    public void onCollisionEnter(Collider collider) {
+
+    }
+    public void onCollisionExit(Collider collider) {
+
     }
 }
 

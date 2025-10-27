@@ -3,6 +3,9 @@ package GameObjects;
 import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
+import Engine.Physics.CircleCollider;
+import Engine.Physics.Collider;
+import Engine.Physics.ColliderType;
 import Engine.Vector2;
 import Interfaces.Damagable;
 
@@ -18,6 +21,7 @@ public class Bullet extends GameObject {
     float speed = 800f;
     int damage;
     Vector2 velocity = new Vector2(0f, 0f);
+    int pierce = 1;
 
     /**
      * An event that is fired when player shoots a pistol.
@@ -77,6 +81,7 @@ public class Bullet extends GameObject {
     protected void setup() {
         setSprite("bullet");
         scale = new Vector2(0.1f, 0.1f);
+        addCollider(new CircleCollider(3, ColliderType.None));
     }
 
     @Override
@@ -85,35 +90,23 @@ public class Bullet extends GameObject {
         float rotationInRad = (float) Math.toRadians(rotation);
         position = position.add(Vector2.fromRotation(rotationInRad).multiply(speed * deltaTime));
 
-        List<GameObject> gameObjects = new ArrayList<>(Server.getServerObjectsOfClass(Enemy.class));
-        gameObjects.addAll(Server.getServerObjectsOfClass(EnemySpawner.class));
-
-        for (GameObject gameObject : gameObjects) {
-            float distance = gameObject.position.subtract(position).length();
-            if (distance <= 9f) {
-                if (gameObject instanceof Damagable d) {
-                    d.takeDamage(damage);
-                }
-                Server.removeObject(this);
-            }
-        }
-
-        // shootPlayer();
-
         if (time >= 2) {
             Server.removeObject(this);
         }
     }
 
-    private void shootPlayer() {
-        List<GameObject> gameObjects = Server.getClientObjectsOfClass(Player.class);
-
-        for (GameObject gameObject : gameObjects) {
-            float distance = gameObject.position.subtract(position).length();
-            if (distance <= 9f) {
-                Server.sendMessage("player_hit", gameObject.getOwnerUUID(), damage);
+    @Override
+    public void onCollisionEnter(Collider collider) {
+        if (pierce <= 0) {
+            return;
+        }
+        if (collider.getParent() instanceof Damagable d) {
+            d.takeDamage(damage);
+            pierce--;
+            if (pierce <= 0) {
                 Server.removeObject(this);
             }
+
         }
     }
 }

@@ -3,9 +3,13 @@ package GameObjects.Pickups;
 import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
+import Engine.Physics.CircleCollider;
+import Engine.Physics.Collider;
+import Engine.Physics.ColliderType;
 import Engine.Vector2;
 import GameObjects.Enemy;
 import GameObjects.WeaponManager;
+import Interfaces.Damagable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +22,6 @@ public class WeaponPickup extends Pickup {
     int weaponIndex = 0;
     boolean pierce = true;
     int damage = 10;
-    ArrayList<GameObject> damaged = new ArrayList<>();
-
 
     @NetEvent("throw_weapon")
     public static void weaponThrow(Vector2 position, float rotation, int weapon) {
@@ -36,17 +38,22 @@ public class WeaponPickup extends Pickup {
                 setSprite("pistol");
                 scale = new Vector2(0.05f, 0.05f);
                 pierce = false;
+                addCollider(new CircleCollider(3, ColliderType.None));
                 break;
             case 1:
                 setSprite("shotgun");
                 scale = new Vector2(0.07f, 0.07f);
                 pierce = true;
+                addCollider(new CircleCollider(5, ColliderType.None));
+                pickupDistance = 30f;
                 speed = 600f;
                 break;
             case 2:
                 setSprite("rifle");
                 scale = new Vector2(0.07f, 0.07f);
                 pierce = false;
+                addCollider(new CircleCollider(5, ColliderType.None));
+                pickupDistance = 30f;
                 break;
             default:
                 break;
@@ -71,9 +78,9 @@ public class WeaponPickup extends Pickup {
 
     @Override
     protected void setup() {
-
         setLayer(-10);
         despawnTime = -1;
+
     }
 
     WeaponPickup(Vector2 position, float rotation) {
@@ -102,13 +109,10 @@ public class WeaponPickup extends Pickup {
         if (thrownTimer < 0.5f) {
             position = position.add(velocity.multiply(speed * deltaTime));
             rotation += 600 * deltaTime;
-            collision();
         } else if (weaponIndex == 1) {
             if (thrownTimer < 1.5f) {
-                damaged.clear();
                 position = position.add(velocity.multiply(-speed * deltaTime));
                 rotation += 600 * deltaTime;
-                collision();
             }
         }
 
@@ -129,27 +133,21 @@ public class WeaponPickup extends Pickup {
             position.x = 1350;
             velocity = new Vector2(-velocity.x, velocity.y);
         }
-
     }
 
-    private void collision() {
-        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
-        for (GameObject enemy : enemies) {
-            if (damaged.contains(enemy)) {
-                continue;
+    @Override
+    public void onCollisionEnter(Collider collider) {
+        if (thrownTimer < 0.5f || (weaponIndex == 1 && thrownTimer < 1.5f)) {
+            if (collider.getParent() instanceof Damagable d) {
+                d.takeDamage(damage);
             }
-            Vector2 distance = enemy.position.subtract(position);
-            if (distance.length() < 15f) {
-                Enemy e = (Enemy) enemy;
-                damaged.add(e);
-                e.takeDamage(damage);
-                if (pierce) {
-                    continue;
-                }
-                position = position.subtract(distance.normalize().multiply(30 - distance.length()));
-                float dot = velocity.dot(distance.normalize());
-                velocity = velocity.subtract(distance.normalize().multiply(2 * dot));
+            if (pierce) {
+                return;
             }
+            Vector2 distance = collider.getParent().position.subtract(position);
+            float dot = velocity.dot(distance.normalize());
+            velocity = velocity.subtract(distance.normalize().multiply(2 * dot));
         }
+
     }
 }

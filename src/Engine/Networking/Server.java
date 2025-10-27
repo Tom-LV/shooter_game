@@ -195,6 +195,7 @@ public class Server {
         }
         pendingNetworkActions.add(() -> {
             serverConnectionData.removeObject(gameObject);
+            gameObject.cleanUp();
         });
     }
 

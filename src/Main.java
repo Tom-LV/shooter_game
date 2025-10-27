@@ -16,7 +16,7 @@ public class Main {
 
 
         Sprite.loadImage("player", artAssetPath + "player\\smith.png",
-                new Vector2(0.25f, 0.5f));
+                new Vector2(0.45f, 0.5f));
         // Pistol sprites
         Sprite.loadImage("player_pistol", artAssetPath + "player\\smith_pistol.png",
                 new Vector2(0.25f, 0.5f));
@@ -65,6 +65,10 @@ public class Main {
         Sprite.loadImage("health", artAssetPath + "health.png",
                 new Vector2(0f, 0.5f));
         Sprite.loadImage("health_pickup", artAssetPath + "medkit.png",
+                new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("descrom_nest", artAssetPath + "descrom_nest.png",
+                new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("ammo_crate", artAssetPath + "ammo_crate.png",
                 new Vector2(0.5f, 0.5f));
 
         // Weapons

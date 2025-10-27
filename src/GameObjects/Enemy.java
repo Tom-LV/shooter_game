@@ -2,6 +2,8 @@ package GameObjects;
 
 import Engine.GameObject;
 import Engine.Networking.Server;
+import Engine.Physics.CircleCollider;
+import Engine.Physics.ColliderType;
 import Engine.Vector2;
 import GameObjects.Pickups.PickupManager;
 import Interfaces.Damagable;
@@ -31,8 +33,8 @@ public class Enemy extends GameObject implements Damagable {
         rng = new Random();
         setSprite("zombie");
         rotation = rng.nextInt(360);
-        //setRotation(45);
         scale = new Vector2(0.15f, 0.15f);
+        addCollider(new CircleCollider(5, ColliderType.Dynamic));
     }
 
     @Override
@@ -66,9 +68,6 @@ public class Enemy extends GameObject implements Damagable {
             velocity = velocity.add(new Vector2(speed * 0.25f, 0f).rotate(rotation));
         }
 
-
-        collision();
-
         position = position.add(velocity.multiply(deltaTime));
         velocity = new Vector2(0, 0);
 
@@ -84,21 +83,6 @@ public class Enemy extends GameObject implements Damagable {
         if (position.x > 1350) {
             position.x = 1350;
         }
-    }
-
-    private void collision() {
-        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
-        Vector2 newPos = position;
-        for (GameObject enemy : enemies) {
-            if (enemy.equals(this)) {
-                continue;
-            }
-            Vector2 distance = enemy.position.subtract(position);
-            if (distance.length() < 30f) {
-                newPos = newPos.subtract(distance.normalize().multiply(30 - distance.length()));
-            }
-        }
-        position = newPos;
     }
 
     private void goToClosestPlayer(float deltaTime, GameObject player, float distance) {
@@ -138,11 +122,6 @@ public class Enemy extends GameObject implements Damagable {
 
     @Override
     public void onKill() {
-        if (rng.nextFloat() >= 0.75f) {
-            PickupManager.createPickup(position, "health_pickup");
-        } else if (rng.nextFloat() >= 0.5f) {
-            PickupManager.createPickup(position, "ammo_pickup");
-        }
         Server.removeObject(this);
     }
 }

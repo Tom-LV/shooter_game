@@ -2,6 +2,8 @@ package GameObjects;
 
 import Engine.GameObject;
 import Engine.Networking.Server;
+import Engine.Physics.CircleCollider;
+import Engine.Physics.ColliderType;
 import Engine.Vector2;
 import Interfaces.Damagable;
 
@@ -22,9 +24,10 @@ public class EnemySpawner extends GameObject implements Damagable {
     @Override
     protected void setup() {
         rng = new Random();
-        setSprite("zombie");
+        setSprite("descrom_nest");
         scale = new Vector2(0.3f, 0.3f);
         setLayer(-99);
+        addCollider(new CircleCollider(15, ColliderType.Static));
     }
 
     @Override

@@ -3,6 +3,8 @@ package Engine;
 import Engine.Inputs.Input;
 import Engine.Networking.Client;
 import Engine.Networking.Server;
+import Engine.Physics.PhysicsManager;
+
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ComponentAdapter;
@@ -110,6 +112,7 @@ public class Engine {
         Server.update((float) Engine.getDeltaTime());
         Client.update((float) Engine.getDeltaTime());
 
+        PhysicsManager.physicsUpdate();
         currentScene.update((float) Engine.getDeltaTime());
 
         deltaTime = Duration.between(beginTime, Instant.now());

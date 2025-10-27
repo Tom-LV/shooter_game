@@ -11,13 +11,13 @@ public class AmmoPickup extends Pickup {
         if (WeaponManager.hasWeapon(player)) {
             return;
         }
-        Server.sendMessage("ammo_pickup", player.getOwnerUUID(), 10);
+        Server.sendMessage("ammo_pickup", player.getOwnerUUID(), 50);
         Server.removeObject(this);
     }
 
     @Override
     protected void setup() {
-        setSprite("bullet");
+        setSprite("ammo_crate");
         scale = new Vector2(0.1f, 0.1f);
         setLayer(-50);
     }
