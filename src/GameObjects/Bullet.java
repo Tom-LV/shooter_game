@@ -6,6 +6,7 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.Collider;
 import Engine.Physics.ColliderType;
+import Engine.Physics.CollisionEvent;
 import Engine.Vector2;
 import Interfaces.Damagable;
 
@@ -96,11 +97,11 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public void onCollisionEnter(Collider collider) {
+    public void onCollisionEnter(CollisionEvent e) {
         if (pierce <= 0) {
             return;
         }
-        if (collider.getParent() instanceof Damagable d) {
+        if (e.getOther().getParent() instanceof Damagable d) {
             d.takeDamage(damage);
             pierce--;
             if (pierce <= 0) {

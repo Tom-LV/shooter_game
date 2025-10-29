@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.Physics.Collider;
+import Engine.Physics.CollisionEvent;
 import Engine.Physics.PhysicsManager;
 
 import java.awt.Graphics2D;
@@ -301,13 +302,13 @@ public class GameObject implements Serializable {
         }
     }
 
-    public void onCollision(Collider collider) {
+    public void onCollision(CollisionEvent collider) {
 
     }
-    public void onCollisionEnter(Collider collider) {
+    public void onCollisionEnter(CollisionEvent collider) {
 
     }
-    public void onCollisionExit(Collider collider) {
+    public void onCollisionExit(CollisionEvent collider) {
 
     }
 }

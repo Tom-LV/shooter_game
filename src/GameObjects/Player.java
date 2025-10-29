@@ -7,6 +7,8 @@ import Engine.GameObject;
 import Engine.Inputs.Input;
 import Engine.Networking.Client;
 import Engine.Networking.NetEvent;
+import Engine.Physics.CircleCollider;
+import Engine.Physics.ColliderType;
 import Engine.Sound.AudioClip;
 import Engine.Sound.AudioPlayer;
 import Engine.Vector2;
@@ -181,6 +183,7 @@ public class Player extends GameObject {
         animations.add(shotgunAnim);
         animations.add(rifleAnim);
         selectWeapon(-1);
+        addCollider(new CircleCollider(10f, ColliderType.Dynamic));
     }
 
     @Override

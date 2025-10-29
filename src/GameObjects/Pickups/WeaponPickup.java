@@ -6,6 +6,7 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.Collider;
 import Engine.Physics.ColliderType;
+import Engine.Physics.CollisionEvent;
 import Engine.Vector2;
 import GameObjects.Enemy;
 import GameObjects.WeaponManager;
@@ -38,13 +39,13 @@ public class WeaponPickup extends Pickup {
                 setSprite("pistol");
                 scale = new Vector2(0.05f, 0.05f);
                 pierce = false;
-                addCollider(new CircleCollider(3, ColliderType.None));
+                addCollider(new CircleCollider(7, ColliderType.None));
                 break;
             case 1:
                 setSprite("shotgun");
                 scale = new Vector2(0.07f, 0.07f);
                 pierce = true;
-                addCollider(new CircleCollider(5, ColliderType.None));
+                addCollider(new CircleCollider(10, ColliderType.None));
                 pickupDistance = 30f;
                 speed = 600f;
                 break;
@@ -52,7 +53,7 @@ public class WeaponPickup extends Pickup {
                 setSprite("rifle");
                 scale = new Vector2(0.07f, 0.07f);
                 pierce = false;
-                addCollider(new CircleCollider(5, ColliderType.None));
+                addCollider(new CircleCollider(10, ColliderType.None));
                 pickupDistance = 30f;
                 break;
             default:
@@ -136,17 +137,17 @@ public class WeaponPickup extends Pickup {
     }
 
     @Override
-    public void onCollisionEnter(Collider collider) {
+    public void onCollisionEnter(CollisionEvent e) {
+
         if (thrownTimer < 0.5f || (weaponIndex == 1 && thrownTimer < 1.5f)) {
-            if (collider.getParent() instanceof Damagable d) {
+            if (e.getOther().getParent() instanceof Damagable d) {
                 d.takeDamage(damage);
+                if (pierce) {
+                    return;
+                }
             }
-            if (pierce) {
-                return;
-            }
-            Vector2 distance = collider.getParent().position.subtract(position);
-            float dot = velocity.dot(distance.normalize());
-            velocity = velocity.subtract(distance.normalize().multiply(2 * dot));
+            float dot = velocity.dot(e.getNormal());
+            velocity = velocity.subtract(e.getNormal().multiply(2 * dot));
         }
 
     }

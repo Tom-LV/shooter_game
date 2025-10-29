@@ -34,7 +34,7 @@ public class Enemy extends GameObject implements Damagable {
         setSprite("zombie");
         rotation = rng.nextInt(360);
         scale = new Vector2(0.15f, 0.15f);
-        addCollider(new CircleCollider(5, ColliderType.Dynamic));
+        addCollider(new CircleCollider(13, ColliderType.Dynamic));
     }
 
     @Override

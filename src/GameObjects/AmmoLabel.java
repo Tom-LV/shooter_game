@@ -2,6 +2,7 @@ package GameObjects;
 
 import Engine.Engine;
 import Engine.GameObject;
+import Engine.Inputs.Input;
 import Engine.Vector2;
 
 import java.awt.*;

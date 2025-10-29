@@ -112,8 +112,9 @@ public class Engine {
         Server.update((float) Engine.getDeltaTime());
         Client.update((float) Engine.getDeltaTime());
 
-        PhysicsManager.physicsUpdate();
+
         currentScene.update((float) Engine.getDeltaTime());
+        PhysicsManager.physicsUpdate();
 
         deltaTime = Duration.between(beginTime, Instant.now());
         beginTime = Instant.now();

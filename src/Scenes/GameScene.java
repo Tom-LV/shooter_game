@@ -25,12 +25,15 @@ public class GameScene extends Scene {
         WeaponSelect.createIcons(this);
         addObject(new AmmoLabel(player));
         addObject(new TileMap());
+        addObject(new RectangleThing());
+        //addObject(new MouseFollower());
 
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
         Server.addObject(new WeaponPickup(new Vector2(0, -100), 1));
         Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
         Server.addObject(new EnemyManager());
         Server.addObject(new LootManager());
+        //Server.addObject(new RectangleThing());
 
     }
 }

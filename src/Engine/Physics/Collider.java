@@ -4,36 +4,40 @@ import Engine.GameObject;
 import Engine.Vector2;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class Collider {
     ColliderType type = ColliderType.None;
     GameObject parent;
 
-    ArrayList<Consumer<Collider>> collisionEnterListeners = new ArrayList<>();
-    ArrayList<Consumer<Collider>> collisionExitListeners = new ArrayList<>();
-    ArrayList<Consumer<Collider>> collisionListeners = new ArrayList<>();
+    ArrayList<Consumer<CollisionEvent>> collisionEnterListeners = new ArrayList<>();
+    ArrayList<Consumer<CollisionEvent>> collisionExitListeners = new ArrayList<>();
+    ArrayList<Consumer<CollisionEvent>> collisionListeners = new ArrayList<>();
 
-    ArrayList<Collider> collisions = new ArrayList<>();
-    ArrayList<Collider> newCollisions = new ArrayList<>();
+    Set<CollisionEvent> collisions = new HashSet<>();
+    Set<CollisionEvent> newCollisions = new HashSet<>();
 
     Vector2 newPosition = new Vector2(0, 0);
 
     public void update() {
-        for (Collider collider : newCollisions) {
+        for (CollisionEvent collider : newCollisions) {
             callOnCollision(collider);
+
             if (!collisions.contains(collider)) {
                 callOnCollisionEnter(collider);
-                collisions.add(collider);
             }
         }
-        for (int i = collisions.size() - 1; i >= 0 ; i--) {
-            Collider collider = collisions.get(i);
+
+        for (CollisionEvent collider : collisions) {
             if (!newCollisions.contains(collider)) {
                 callCollisionExit(collider);
-                collisions.remove(collider);
             }
         }
+
+        collisions.clear();
+        collisions.addAll(newCollisions);
         newCollisions.clear();
         parent.position = parent.position.add(newPosition);
         newPosition = new Vector2(0, 0);
@@ -49,20 +53,21 @@ public abstract class Collider {
 
     public abstract void checkCollision(Collider other);
 
-    private void callOnCollision(Collider collider) {
-        for (Consumer<Collider> collisionListener : collisionListeners) {
+    private void callOnCollision(CollisionEvent collider) {
+        for (Consumer<CollisionEvent> collisionListener : collisionListeners) {
             collisionListener.accept(collider);
         }
     }
 
-    private void callOnCollisionEnter(Collider collider) {
-        for (Consumer<Collider> collisionListener : collisionEnterListeners) {
+    private void callOnCollisionEnter(CollisionEvent collider) {
+        for (Consumer<CollisionEvent> collisionListener : collisionEnterListeners) {
             collisionListener.accept(collider);
         }
     }
 
-    private void callCollisionExit(Collider collider) {
-        for (Consumer<Collider> collisionListener : collisionExitListeners) {
+    private void callCollisionExit(CollisionEvent collider) {
+        for (Consumer<CollisionEvent> collisionListener : collisionExitListeners) {
+
             collisionListener.accept(collider);
         }
     }
@@ -73,21 +78,21 @@ public abstract class Collider {
         collisionEnterListeners.clear();
     }
 
-    public void onCollisionEnter(Consumer<Collider> onCollisionEnter) {
+    public void onCollisionEnter(Consumer<CollisionEvent> onCollisionEnter) {
         collisionEnterListeners.add(onCollisionEnter);
     }
 
-    public void onCollisionExit(Consumer<Collider> onCollisionExit) {
-        collisionExitListeners.remove(onCollisionExit);
+    public void onCollisionExit(Consumer<CollisionEvent> onCollisionExit) {
+        collisionExitListeners.add(onCollisionExit);
     }
 
-    public void onCollision(Consumer<Collider> onCollision) {
+    public void onCollision(Consumer<CollisionEvent> onCollision) {
         collisionListeners.add(onCollision);
     }
 
-    protected void collided(Collider other) {
-        if (!newCollisions.contains(other)) {
-            newCollisions.add(other);
+    protected void collided(CollisionEvent collisionEvent) {
+        if (!newCollisions.contains(collisionEvent)) {
+            newCollisions.add(collisionEvent);
         }
     }
 }

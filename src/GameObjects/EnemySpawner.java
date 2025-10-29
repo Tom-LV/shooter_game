@@ -27,7 +27,7 @@ public class EnemySpawner extends GameObject implements Damagable {
         setSprite("descrom_nest");
         scale = new Vector2(0.3f, 0.3f);
         setLayer(-99);
-        addCollider(new CircleCollider(15, ColliderType.Static));
+        addCollider(new CircleCollider(35, ColliderType.Static));
     }
 
     @Override
