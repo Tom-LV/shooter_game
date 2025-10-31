@@ -22,7 +22,7 @@ public class EnemySpawner extends GameObject implements Damagable {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         rng = new Random();
         setSprite("descrom_nest");
         scale = new Vector2(0.3f, 0.3f);

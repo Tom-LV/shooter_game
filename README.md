@@ -1,2 +1,31 @@
-###
-Shooter game
+## Shooter game
+
+### TODO
+- [ ] Collisions
+    - [X] Make server and host client have different collision loops
+    - [ ] Send object creation requests to clients, for collider
+- [ ] Lootable items
+  - [ ] Have lootable items on the ground
+  - [ ] Show an indicator for players when an item is lootable
+  - [ ] Have a looting action
+  - [ ] Show remaining time and progress circle for looting
+  - [ ] Make sure it stops when you move, or you are not permitted to collect it
+- [ ] Map generation
+  - [ ] Have the ground be synced between all clients
+  - [ ] Add obstacle generator for the map
+  - [ ] Make sure the obstacles are synced
+  - [ ] Add enemy spawner generator, that does not put them on top of colliders
+  - [ ] Add loot spawner that does not put them on colliders
+- [ ] Rounds
+  - [ ] Add a main base(simple rectangle)
+  - [ ] Add weapon selection
+    - [ ] Weapons are spawned on the ground
+    - [ ] Other weapons despawn when picked up
+    - [ ] When a weapon is dropped all weapon reappear
+  - [ ] Add an area where if all players are in it, they are transported to the game area
+  - [ ] Add a timer for the game
+  - [ ] After the timer expires the players are sent back to main base
+- [ ] Death
+  - [ ] When a player dies, he is despawned
+  - [ ] Players cannot be revived
+  - [ ] If all players die, they are sent back to the main base

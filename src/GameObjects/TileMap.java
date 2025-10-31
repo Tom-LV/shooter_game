@@ -16,7 +16,7 @@ public class TileMap extends GameObject {
     Random rng;
 
     @Override
-    protected void setup() {
+    public void setup() {
         rng = new Random();
         generateTileMap();
         setLayer(-1000);

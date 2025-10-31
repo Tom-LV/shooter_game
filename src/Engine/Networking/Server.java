@@ -1,6 +1,9 @@
 package Engine.Networking;
 
 import Engine.GameObject;
+import Engine.GameObjectType;
+import Engine.Physics.Collider;
+import Engine.Physics.PhysicsManager;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,6 +31,7 @@ public class Server {
     private static final int playerCount = 2;
     private static Thread serverThread;
 
+    private static PhysicsManager physicsManager = new PhysicsManager();
 
     public static void start(int port) throws SocketException {
         socket = new DatagramSocket(port);
@@ -115,6 +119,7 @@ public class Server {
             }
         }
 
+        physicsManager.physicsUpdate();
         for (GameObject gameObject : serverConnectionData.getConnectionObjects()) {
             gameObject.update(deltaTime);
         }
@@ -181,6 +186,8 @@ public class Server {
         }
         pendingNetworkActions.add(() -> {
             gameObject.setOwnerUUID(serverConnectionData.getUUID());
+            gameObject.setGameObjectType(GameObjectType.Server);
+            gameObject.setup();
             serverConnectionData.addObject(gameObject);
         });
     }
@@ -197,6 +204,14 @@ public class Server {
             serverConnectionData.removeObject(gameObject);
             gameObject.cleanUp();
         });
+    }
+
+    public static void addCollider(Collider collider) {
+        physicsManager.addCollider(collider);
+    }
+
+    public static void removeCollider(Collider collider) {
+        physicsManager.removeCollider(collider);
     }
 
     private static void sendNetworkUpdate() {

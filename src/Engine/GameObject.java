@@ -1,5 +1,7 @@
 package Engine;
 
+import Engine.Networking.Client;
+import Engine.Networking.Server;
 import Engine.Physics.Collider;
 import Engine.Physics.CollisionEvent;
 import Engine.Physics.PhysicsManager;
@@ -35,6 +37,7 @@ public class GameObject implements Serializable {
     private float animTime = 0f;
     private int frameIndex = 0;
     private Animation currentAnimation;
+    private GameObjectType gameObjectType;
 
     public void setOwnerUUID(UUID uuid) {
         ownerUUID = uuid;
@@ -42,6 +45,10 @@ public class GameObject implements Serializable {
 
     public UUID getOwnerUUID() {
         return ownerUUID;
+    }
+
+    public void setGameObjectType(GameObjectType gameObjectType) {
+        this.gameObjectType = gameObjectType;
     }
 
     /**
@@ -66,7 +73,6 @@ public class GameObject implements Serializable {
     public GameObject() {
         this.id = UUID.randomUUID();
         this.myClass = getClass();
-        setup();
     }
 
     public boolean isOfClass(Class<?> cls) {
@@ -187,7 +193,7 @@ public class GameObject implements Serializable {
         g2d.drawImage(currentSprite.getImage(), at, null);
     }
 
-    protected void setup() {}
+    public void setup() {}
 
     public void onDestroy() {}
 
@@ -287,15 +293,28 @@ public class GameObject implements Serializable {
     public void addCollider(Collider collider) {
         this.collider = collider;
         collider.setParent(this);
-        collider.onCollision(this::onCollision);
-        collider.onCollisionEnter(this::onCollisionEnter);
-        collider.onCollisionExit(this::onCollisionExit);
-        PhysicsManager.addCollider(collider);
+        if (gameObjectType == GameObjectType.Server) {
+            Server.addCollider(collider);
+            collider.onCollision(this::onCollision);
+            collider.onCollisionEnter(this::onCollisionEnter);
+            collider.onCollisionExit(this::onCollisionExit);
+        } else if (gameObjectType == GameObjectType.Ghost) {
+            Engine.addCollider(collider);
+        } else {
+            Engine.addCollider(collider);
+            collider.onCollision(this::onCollision);
+            collider.onCollisionEnter(this::onCollisionEnter);
+            collider.onCollisionExit(this::onCollisionExit);
+        }
     }
 
     public void cleanUp() {
         if (this.collider != null) {
-            PhysicsManager.removeCollider(this.collider);
+            if (gameObjectType == GameObjectType.Server) {
+                Server.removeCollider(collider);
+            } else {
+                Engine.removeCollider(collider);
+            }
             this.collider.clearListeners();
             this.collider = null;
 

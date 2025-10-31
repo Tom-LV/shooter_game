@@ -16,7 +16,7 @@ public class AmmoPickup extends Pickup {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         setSprite("ammo_crate");
         scale = new Vector2(0.1f, 0.1f);
         setLayer(-50);

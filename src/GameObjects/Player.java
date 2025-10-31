@@ -151,7 +151,7 @@ public class Player extends GameObject {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         setSprite("player_pistol");
         setLayer(1);
         scale = new Vector2(0.15f, 0.15f);

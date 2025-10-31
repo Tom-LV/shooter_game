@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
 public class Background extends GameObject {
     private final Image bgImage = new ImageIcon("src/Assets/art/city.png").getImage();
     @Override
-    protected void setup() {
+    public void setup() {
         setSprite("city");
         scale = new Vector2(0.4f, 0.4f);
         setLayer(-100);

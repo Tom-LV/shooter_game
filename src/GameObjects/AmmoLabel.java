@@ -14,7 +14,7 @@ public class AmmoLabel extends GameObject {
     int ammo = 0;
 
     @Override
-    protected void setup() {
+    public void setup() {
         position = new Vector2(45, 5);
     }
 

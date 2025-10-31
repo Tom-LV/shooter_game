@@ -12,7 +12,7 @@ import Engine.Vector2;
 public class MouseFollower extends GameObject {
 
     @Override
-    protected void setup() {
+    public void setup() {
         setSprite("zombie");
         scale = new Vector2(0.1f, 0.1f);
         addCollider(new CircleCollider(10f, ColliderType.None));

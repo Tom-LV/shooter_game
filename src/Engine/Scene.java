@@ -175,6 +175,8 @@ public abstract class Scene extends JPanel {
             }
             gameObject.setOwnerUUID(Client.getClientId());
             gameObject.setLayer(gameObject.getLayer());
+            gameObject.setGameObjectType(GameObjectType.Local);
+            gameObject.setup();
             localObjects.add(gameObject);
             addDrawOrder(gameObject);
         });
@@ -203,6 +205,8 @@ public abstract class Scene extends JPanel {
             }
             gameObject.setOwnerUUID(Client.getClientId());
             gameObject.setLayer(gameObject.getLayer());
+            gameObject.setGameObjectType(GameObjectType.Client);
+            gameObject.setup();
             networkObjects.add(gameObject);
             addDrawOrder(gameObject);
             Client.addObject(gameObject);
@@ -234,6 +238,7 @@ public abstract class Scene extends JPanel {
      */
     protected void addServerObject(GameObject gameObject) {
         pendingUpdateActions.add(() -> {
+            gameObject.setGameObjectType(GameObjectType.Ghost);
            serverObjects.add(gameObject);
            addDrawOrder(gameObject);
         });

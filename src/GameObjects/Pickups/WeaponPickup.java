@@ -4,15 +4,11 @@ import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
-import Engine.Physics.Collider;
 import Engine.Physics.ColliderType;
 import Engine.Physics.CollisionEvent;
 import Engine.Vector2;
-import GameObjects.Enemy;
 import GameObjects.WeaponManager;
 import Interfaces.Damagable;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class WeaponPickup extends Pickup {
@@ -27,7 +23,6 @@ public class WeaponPickup extends Pickup {
     @NetEvent("throw_weapon")
     public static void weaponThrow(Vector2 position, float rotation, int weapon) {
         WeaponPickup weaponPickup = new WeaponPickup(position, rotation);
-        weaponPickup.setWeapon(weapon);
         Server.addObject(weaponPickup);
         WeaponManager.dropWeapon();
     }
@@ -78,10 +73,10 @@ public class WeaponPickup extends Pickup {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         setLayer(-10);
         despawnTime = -1;
-
+        setWeapon(weaponIndex);
     }
 
     WeaponPickup(Vector2 position, float rotation) {

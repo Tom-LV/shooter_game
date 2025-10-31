@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PhysicsManager {
-    private static final ArrayList<Collider> colliders = new ArrayList<>();
-    private static final ConcurrentLinkedQueue<Runnable> pendingPhysicsActions = new ConcurrentLinkedQueue<>();
+    private final ArrayList<Collider> colliders = new ArrayList<>();
+    private final ConcurrentLinkedQueue<Runnable> pendingPhysicsActions = new ConcurrentLinkedQueue<>();
 
-    public static void physicsUpdate() {
+    public void physicsUpdate() {
         Runnable task;
         while ((task = pendingPhysicsActions.poll()) != null) {
             try {
@@ -29,7 +29,7 @@ public class PhysicsManager {
         }
     }
 
-    public static void addCollider(Collider collider) {
+    public void addCollider(Collider collider) {
         pendingPhysicsActions.add(() -> {
             if (colliders.contains(collider)) {
                 return;
@@ -38,7 +38,7 @@ public class PhysicsManager {
         });
     }
 
-    public static void removeCollider(Collider collider) {
+    public void removeCollider(Collider collider) {
         pendingPhysicsActions.add(() -> {
             colliders.remove(collider);
         });

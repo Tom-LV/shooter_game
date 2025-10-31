@@ -15,7 +15,7 @@ public class RectangleThing extends GameObject {
     Vector2 dimensions;
 
     @Override
-    protected void setup() {
+    public void setup() {
         dimensions = new Vector2(200, 100);
         // RectCollider(dimensions, pivot)
         addCollider(new RectCollider(dimensions, new Vector2(0.5f, 0.5f), ColliderType.Static));

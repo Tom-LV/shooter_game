@@ -29,7 +29,7 @@ public class Enemy extends GameObject implements Damagable {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         rng = new Random();
         setSprite("zombie");
         rotation = rng.nextInt(360);

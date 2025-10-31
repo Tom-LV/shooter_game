@@ -3,6 +3,7 @@ package Engine;
 import Engine.Inputs.Input;
 import Engine.Networking.Client;
 import Engine.Networking.Server;
+import Engine.Physics.Collider;
 import Engine.Physics.PhysicsManager;
 
 import java.awt.Dimension;
@@ -28,6 +29,7 @@ public class Engine {
     private static Duration deltaTime = Duration.ZERO;
     private static Instant beginTime = Instant.now();
     private static final Input input = new Input();
+    private static final PhysicsManager physicsManager = new PhysicsManager();
 
     /**
      * Setup engine.
@@ -114,10 +116,18 @@ public class Engine {
 
 
         currentScene.update((float) Engine.getDeltaTime());
-        PhysicsManager.physicsUpdate();
+        physicsManager.physicsUpdate();
 
         deltaTime = Duration.between(beginTime, Instant.now());
         beginTime = Instant.now();
+    }
+
+    public static void addCollider(Collider collider) {
+        physicsManager.addCollider(collider);
+    }
+
+    public static void removeCollider(Collider collider) {
+        physicsManager.removeCollider(collider);
     }
 
     /**

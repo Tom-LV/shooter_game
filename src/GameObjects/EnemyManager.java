@@ -14,7 +14,7 @@ public class EnemyManager extends GameObject {
     private Random rng;
 
     @Override
-    protected void setup() {
+    public void setup() {
         rng = new Random();
         for (int i = 0; i < 10; i++) {
             createSpawner();

@@ -15,7 +15,7 @@ public class HealthBar extends GameObject {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         setSprite("health");
         scale = new Vector2(0.25f, 0.25f);
         setLayer(10);
