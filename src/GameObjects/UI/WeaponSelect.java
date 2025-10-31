@@ -1,4 +1,4 @@
-package GameObjects;
+package GameObjects.UI;
 
 import Engine.GameObject;
 import Engine.Scene;
@@ -7,8 +7,6 @@ import Engine.Vector2;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 /**
  * Displays weapon icons below minimap.

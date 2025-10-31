@@ -1,7 +1,8 @@
-package GameObjects;
+package GameObjects.UI;
 
 import Engine.GameObject;
 import Engine.Vector2;
+import GameObjects.Player;
 
 /**
  * Healthbar gameObject that displays the player health above the player.

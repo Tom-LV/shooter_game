@@ -12,6 +12,8 @@ import Engine.Physics.ColliderType;
 import Engine.Sound.AudioClip;
 import Engine.Sound.AudioPlayer;
 import Engine.Vector2;
+import GameObjects.UI.WeaponSelect;
+
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,10 @@ public class Player extends GameObject {
 
     public int getMaxHealth() {
         return maxHealth;
+    }
+
+    public int getAmmo() {
+        return ammo;
     }
 
     private void selectWeapon(int index) {

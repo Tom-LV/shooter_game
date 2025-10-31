@@ -1,9 +1,6 @@
 package Engine.Physics;
 
 import Engine.Vector2;
-import GameObjects.MouseFollower;
-
-import java.awt.*;
 
 public class RectCollider extends Collider {
     Vector2 dimensions;
@@ -17,9 +14,6 @@ public class RectCollider extends Collider {
     @Override
     public void checkCollision(Collider other) {
         if (other instanceof CircleCollider c) {
-            if (!(other.parent instanceof MouseFollower)) {
-                return;
-            }
             Vector2 start = new Vector2(dimensions.x * pivot.x, dimensions.y * pivot.y);
             start = start.rotate(parent.rotation);
             start = parent.position.subtract(start);

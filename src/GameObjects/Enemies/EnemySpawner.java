@@ -1,4 +1,4 @@
-package GameObjects;
+package GameObjects.Enemies;
 
 import Engine.GameObject;
 import Engine.Networking.Server;

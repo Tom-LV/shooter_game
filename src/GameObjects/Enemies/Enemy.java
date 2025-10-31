@@ -1,14 +1,13 @@
-package GameObjects;
+package GameObjects.Enemies;
 
 import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Vector2;
-import GameObjects.Pickups.PickupManager;
+import GameObjects.Player;
 import Interfaces.Damagable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 

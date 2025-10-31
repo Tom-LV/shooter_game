@@ -1,10 +1,9 @@
-package GameObjects;
+package GameObjects.Enemies;
 
 import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Random;
 
 /**

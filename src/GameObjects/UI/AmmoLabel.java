@@ -1,12 +1,10 @@
-package GameObjects;
+package GameObjects.UI;
 
-import Engine.Engine;
 import Engine.GameObject;
-import Engine.Inputs.Input;
 import Engine.Vector2;
+import GameObjects.Player;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 
 public class AmmoLabel extends GameObject {
 
@@ -20,12 +18,12 @@ public class AmmoLabel extends GameObject {
 
     public AmmoLabel(Player player) {
         this.player = player;
-        ammo = player.ammo;
+        ammo = player.getAmmo();
     }
 
     @Override
     public void update(float deltaTime) {
-        ammo = player.ammo;
+        ammo = player.getAmmo();
     }
 
     @Override

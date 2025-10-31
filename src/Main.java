@@ -60,8 +60,8 @@ public class Main {
                 new Vector2(0.3f, 0.5f));
         Sprite.loadImage("zombie_hit", artAssetPath + "descrom_hit.png",
                 new Vector2(0.3f, 0.5f));
-        Sprite.loadImage("city", artAssetPath + "city.png",
-                new Vector2(0.5f, 0.5f));
+//        Sprite.loadImage("city", artAssetPath + "city.png",
+//                new Vector2(0.5f, 0.5f));
         Sprite.loadImage("health", artAssetPath + "health.png",
                 new Vector2(0f, 0.5f));
         Sprite.loadImage("health_pickup", artAssetPath + "medkit.png",

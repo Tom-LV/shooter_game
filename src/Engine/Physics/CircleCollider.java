@@ -2,7 +2,6 @@ package Engine.Physics;
 
 import Engine.GameObject;
 import Engine.Vector2;
-import GameObjects.MouseFollower;
 
 import java.awt.*;
 

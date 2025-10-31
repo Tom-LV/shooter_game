@@ -4,8 +4,11 @@ import Engine.Networking.Server;
 import Engine.Scene;
 import Engine.Vector2;
 import GameObjects.*;
-import GameObjects.Pickups.PickupManager;
+import GameObjects.Enemies.EnemyManager;
 import GameObjects.Pickups.WeaponPickup;
+import GameObjects.UI.AmmoLabel;
+import GameObjects.UI.HealthBar;
+import GameObjects.UI.WeaponSelect;
 
 import java.awt.Color;
 
@@ -25,7 +28,7 @@ public class GameScene extends Scene {
         WeaponSelect.createIcons(this);
         addObject(new AmmoLabel(player));
         addObject(new TileMap());
-        addObject(new RectangleThing());
+        Server.addObject(new RectangleThing());
         //addObject(new MouseFollower());
 
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
