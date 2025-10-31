@@ -1,6 +1,7 @@
-package GameObjects;
+package GameObjects.Loot;
 
 import Engine.GameObject;
+import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Pickups.PickupManager;
 
@@ -23,7 +24,7 @@ public class LootManager extends GameObject {
             if (rng.nextFloat() >= 0.75f) {
                 PickupManager.createPickup(new Vector2(x, y), "health_pickup");
             } else {
-                PickupManager.createPickup(new Vector2(x, y), "ammo_pickup");
+                Server.addObject(new AmmoLoot(new Vector2(x, y)));
             }
             timer = 0;
         }

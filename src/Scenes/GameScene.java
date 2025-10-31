@@ -5,6 +5,8 @@ import Engine.Scene;
 import Engine.Vector2;
 import GameObjects.*;
 import GameObjects.Enemies.EnemyManager;
+import GameObjects.Loot.InteractIndicator;
+import GameObjects.Loot.LootManager;
 import GameObjects.Pickups.WeaponPickup;
 import GameObjects.UI.AmmoLabel;
 import GameObjects.UI.HealthBar;
@@ -28,7 +30,8 @@ public class GameScene extends Scene {
         WeaponSelect.createIcons(this);
         addObject(new AmmoLabel(player));
         addObject(new TileMap());
-        Server.addObject(new RectangleThing());
+        addObject(new RectangleThing());
+        addObject(new InteractIndicator());
         //addObject(new MouseFollower());
 
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
