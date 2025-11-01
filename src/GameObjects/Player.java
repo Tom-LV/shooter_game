@@ -30,7 +30,7 @@ public class Player extends GameObject {
     static AudioClip hurtSfx = new AudioClip("src\\Assets\\audio\\hurt.wav");
     ArrayList<Animation> animations;
 
-    int ammo = 20;
+    int ammo = 50;
     int health = 100;
     int maxHealth = 100;
     int selectedWeapon = 0;
@@ -235,19 +235,6 @@ public class Player extends GameObject {
             hasWeapon = false;
             Client.sendMessage("throw_weapon", position, rotation, selectedWeapon);
             selectWeapon(-1);
-        }
-
-        if (position.y < -910) {
-            position.y = -910;
-        }
-        if (position.x < -1300) {
-            position.x = -1300;
-        }
-        if (position.y > 920) {
-            position.y = 920;
-        }
-        if (position.x > 1350) {
-            position.x = 1350;
         }
 
         Camera.currentCamera.position = position;

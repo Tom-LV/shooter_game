@@ -25,6 +25,7 @@ public class WeaponPickup extends Pickup {
         WeaponPickup weaponPickup = new WeaponPickup(position, rotation);
         Server.addObject(weaponPickup);
         WeaponManager.dropWeapon();
+        weaponPickup.weaponIndex = weapon;
     }
 
     void setWeapon(int weaponIndex) {
@@ -94,7 +95,6 @@ public class WeaponPickup extends Pickup {
         velocity = new Vector2(0f, 0f);
         despawnTime = -1;
         this.weaponIndex = weaponIndex;
-        setWeapon(weaponIndex);
     }
 
     @Override
@@ -110,24 +110,6 @@ public class WeaponPickup extends Pickup {
                 position = position.add(velocity.multiply(-speed * deltaTime));
                 rotation += 600 * deltaTime;
             }
-        }
-
-
-        if (position.y < -910) {
-            position.y = -910;
-            velocity = new Vector2(velocity.x, -velocity.y);
-        }
-        if (position.x < -1300) {
-            position.x = -1300;
-            velocity = new Vector2(-velocity.x, velocity.y);
-        }
-        if (position.y > 920) {
-            position.y = 920;
-            velocity = new Vector2(velocity.x, -velocity.y);
-        }
-        if (position.x > 1350) {
-            position.x = 1350;
-            velocity = new Vector2(-velocity.x, velocity.y);
         }
     }
 

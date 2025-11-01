@@ -69,19 +69,6 @@ public class Enemy extends GameObject implements Damagable {
 
         position = position.add(velocity.multiply(deltaTime));
         velocity = new Vector2(0, 0);
-
-        if (position.y < -910) {
-            position.y = -910;
-        }
-        if (position.x < -1300) {
-            position.x = -1300;
-        }
-        if (position.y > 920) {
-            position.y = 920;
-        }
-        if (position.x > 1350) {
-            position.x = 1350;
-        }
     }
 
     private void goToClosestPlayer(float deltaTime, GameObject player, float distance) {

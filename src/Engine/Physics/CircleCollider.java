@@ -1,9 +1,11 @@
 package Engine.Physics;
 
+import Engine.Engine;
 import Engine.GameObject;
 import Engine.Vector2;
-
+import Engine.Camera;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class CircleCollider extends Collider {
     float radius;
@@ -20,8 +22,19 @@ public class CircleCollider extends Collider {
     }
 
     public void draw(Graphics2D g2d) {
-        g2d.setColor(new Color(0, 0, 0, 0));
-        g2d.drawOval((int) (parent.position.x - radius), (int) (parent.position.y - radius), (int) (radius / 2.0f), (int) (radius / 2.0f));
+        g2d.setStroke(new BasicStroke(1));
+        g2d.setColor(Color.RED);
+        AffineTransform at = new AffineTransform();
+
+        Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2,
+                Engine.getCurrentScene().getHeight() / 2);
+
+        Vector2 panelPos = parent.position.subtract(Camera.currentCamera.position).subtract(new Vector2(radius, radius)).divide(Camera.currentCamera.zoom);
+        panelPos = panelPos.add(panelDimensions);
+        at.translate(panelPos.x, panelPos.y);
+
+        Vector2 zoom = new Vector2(1 / Camera.currentCamera.zoom, 1 / Camera.currentCamera.zoom);
+        g2d.drawOval((int) (panelPos.x), (int) (panelPos.y), (int) (radius / zoom.x), (int) (radius / zoom.y));
     }
 
     @Override

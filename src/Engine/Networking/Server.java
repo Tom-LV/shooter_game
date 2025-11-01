@@ -5,11 +5,13 @@ import Engine.GameObjectType;
 import Engine.Physics.Collider;
 import Engine.Physics.PhysicsManager;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -128,6 +130,12 @@ public class Server {
         if (tick >= 0.0016) {
             sendNetworkUpdate();
             tick = 0;
+        }
+    }
+
+    public static void drawColliders(Graphics2D g) {
+        if (isRunning()) {
+            physicsManager.drawColliders(g);
         }
     }
 

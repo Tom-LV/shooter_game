@@ -17,7 +17,7 @@ public class TileMap extends GameObject {
 
     @Override
     public void setup() {
-        rng = new Random();
+        rng = new Random(123413);
         generateTileMap();
         setLayer(-1000);
         scale = new Vector2(1.02f, 1.02f);
@@ -30,9 +30,21 @@ public class TileMap extends GameObject {
                 tiles[i][j] = rng.nextInt(0, 2);
             }
         }
+        tiles[10][10] = -1;
+        tiles[11][10] = -1;
+        tiles[10][11] = -1;
+        tiles[11][11] = -1;
     }
 
     private void getRoadSprite(int x, int y) {
+        if (x == 10 && y == 10) {
+            setSprite("base");
+            return;
+        }
+        if (tiles[x][y] == -1) {
+            setSprite(null);
+            return;
+        }
         if (tiles[x][y] == 0) {
             setSprite("road_0000");
             return;
@@ -54,13 +66,13 @@ public class TileMap extends GameObject {
 
     @Override
     protected void draw(Graphics2D g2d) {
-        position = new Vector2(-2400, -2400);
+        position = new Vector2(-4000, -4000);
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
                 drawTile(g2d, j, i);
                 position.x += 400;
             }
-            position.x = -1600;
+            position.x = -4000;
             position.y += 400;
         }
     }
@@ -76,6 +88,9 @@ public class TileMap extends GameObject {
         at.translate(panelPos.x, panelPos.y);
         at.scale(scale.x / Camera.currentCamera.zoom, scale.y / Camera.currentCamera.zoom);
         getRoadSprite(x, y);
+        if (currentSprite == null) {
+            return;
+        }
         at.translate(-currentSprite.getDimensions().x * currentSprite.getPivot().x,
                 -currentSprite.getDimensions().y * currentSprite.getPivot().y);
 

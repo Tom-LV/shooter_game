@@ -9,7 +9,7 @@
   - [X] Show an indicator for players when an item is lootable
   - [X] Have a looting action
   - [X] Show remaining time and progress circle for looting
-  - [ ] Execute action when done looting
+  - [X] Execute action when done looting
   - [ ] Make sure it stops when you move, or you are not permitted to collect it
 - [ ] Map generation
   - [ ] Have the ground be synced between all clients

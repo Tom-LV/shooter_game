@@ -86,6 +86,8 @@ public class Main {
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("shotgun_icon", artAssetPath + "shotgun_icon.png",
                 new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("base", artAssetPath + "roads\\base.png",
+                new Vector2(0.25f, 0.25f));
 
         // Roads
         Sprite.loadImage("road_0000", artAssetPath + "roads\\road_0000.png");

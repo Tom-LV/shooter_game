@@ -39,7 +39,7 @@ public class GameScene extends Scene {
         Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
         Server.addObject(new EnemyManager());
         Server.addObject(new LootManager());
-        //Server.addObject(new RectangleThing());
+        Server.addObject(new RectangleThing());
 
     }
 }

@@ -6,8 +6,7 @@ import Engine.Networking.Server;
 import Engine.Physics.Collider;
 import Engine.Physics.PhysicsManager;
 
-import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -114,12 +113,15 @@ public class Engine {
         Server.update((float) Engine.getDeltaTime());
         Client.update((float) Engine.getDeltaTime());
 
-
         currentScene.update((float) Engine.getDeltaTime());
         physicsManager.physicsUpdate();
 
         deltaTime = Duration.between(beginTime, Instant.now());
         beginTime = Instant.now();
+    }
+
+    public static void drawColliders(Graphics2D g) {
+        physicsManager.drawColliders((Graphics2D) g);
     }
 
     public static void addCollider(Collider collider) {

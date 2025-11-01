@@ -28,15 +28,18 @@ public class EnemySpawner extends GameObject implements Damagable {
         scale = new Vector2(0.3f, 0.3f);
         setLayer(-99);
         addCollider(new CircleCollider(35, ColliderType.Static));
+        for (int i = 0; i < 5; i++) {
+            spawnEnemy();
+        }
     }
 
     @Override
     public void update(float deltaTime) {
         time += deltaTime;
 
-        if (time >= rng.nextFloat(1.0f, 2.0f)) {
+        if (time >= rng.nextFloat(5.0f, 10.0f)) {
             for (int i = 0; i < 1; i++) {
-                //spawnEnemy();
+                spawnEnemy();
             }
         }
 

@@ -3,6 +3,7 @@ package Engine.Physics;
 import Engine.GameObject;
 import Engine.Vector2;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +21,10 @@ public abstract class Collider {
     Set<CollisionEvent> newCollisions = new HashSet<>();
 
     Vector2 newPosition = new Vector2(0, 0);
+
+    public void draw(Graphics2D g) {
+        return;
+    }
 
     public void update() {
         for (CollisionEvent collider : newCollisions) {

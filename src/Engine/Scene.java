@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.Networking.Client;
+import Engine.Networking.Server;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -97,10 +98,11 @@ public abstract class Scene extends JPanel {
         for (GameObject gameObject : drawOrder) {
             if (gameObject == null) {
                 continue;
-
             }
             gameObject.draw((Graphics2D) g);
         }
+        Server.drawColliders((Graphics2D) g);
+        Engine.drawColliders((Graphics2D) g);
     }
 
     /**
