@@ -4,6 +4,7 @@ import Engine.Vector2;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * A network message class to allow communication between server and client.
@@ -76,6 +77,10 @@ public class NetMessage {
                 Vector2 v = (Vector2) data[i];
                 dos.writeFloat(v.x);
                 dos.writeFloat(v.y);
+            } else if (paramType == UUID.class) {
+                UUID uuid = (UUID) data[i];
+                dos.writeLong(uuid.getMostSignificantBits());
+                dos.writeLong(uuid.getLeastSignificantBits());
             } else {
                 System.err.println("Could not conver: " + paramType.getClass());
             }
@@ -114,6 +119,10 @@ public class NetMessage {
                 float x = dis.readFloat();
                 float y = dis.readFloat();
                 result[i] = new Vector2(x, y);
+            } else if (paramType == UUID.class) {
+                long uuidMost = dis.readLong();
+                long uuidLeast = dis.readLong();
+                result[i] = new UUID(uuidMost, uuidLeast);
             } else {
                 System.err.println(paramType.getClass() + "is not serializable");
                 result[i] = null;

@@ -10,18 +10,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class Loot extends GameObject {
+public class Loot extends GameObject {
     float interactTimer;
     float interactRange;
     Vector2 offset;
-    static HashMap<GameObject, Loot> playerLoot = new HashMap<GameObject, Loot>();
+    static HashMap<UUID, Loot> playerLoot = new HashMap<>();
+    static HashMap<UUID, GameObject> playerGameObjects = new HashMap<>();
 
-    abstract boolean canInteract(GameObject player);
-    abstract void onInteract();
+    boolean canInteract(GameObject player) {
+        return false;
+    }
+    void onInteract(GameObject player) {}
 
     @NetEvent("finished_interaction")
-    public static void finishedInteraction(UUID lootId) {
-
+    public static void finishedInteraction(UUID playerUUID) {
+        if (playerLoot.containsKey(playerUUID)) {
+            Loot loot =  playerLoot.get(playerUUID);
+            loot.onInteract(playerGameObjects.get(playerUUID));
+            playerLoot.remove(playerUUID);
+        }
     }
 
     @Override
@@ -29,16 +36,19 @@ public abstract class Loot extends GameObject {
         List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
         for (GameObject player : playerObjects) {
+            if (!playerGameObjects.containsKey(player.getOwnerUUID())) {
+                playerGameObjects.put(player.getOwnerUUID(), player);
+            }
 
             float distance = player.position.subtract(position).length();
-            if (playerLoot.containsKey(player)) {
-                if (playerLoot.get(player) == this && distance >= interactRange) {
-                    playerLoot.remove(player);
+            if (playerLoot.containsKey(player.getOwnerUUID())) {
+                if (playerLoot.get(player.getOwnerUUID()) == this && distance >= interactRange) {
+                    playerLoot.remove(player.getOwnerUUID());
                     Server.sendMessage("hide_indicator", player.getOwnerUUID());
                 }
             } else {
                 if (distance < interactRange && canInteract(player)) {
-                    playerLoot.put(player, this);
+                    playerLoot.put(player.getOwnerUUID(), this);
                     Server.sendMessage("show_indicator", player.getOwnerUUID(), position.add(offset), interactTimer);
                 }
             }

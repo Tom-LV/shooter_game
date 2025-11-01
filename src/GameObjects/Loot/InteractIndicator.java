@@ -3,6 +3,7 @@ package GameObjects.Loot;
 import Engine.Engine;
 import Engine.GameObject;
 import Engine.Inputs.Input;
+import Engine.Networking.Client;
 import Engine.Networking.NetEvent;
 import Engine.Vector2;
 import Engine.Camera;
@@ -33,6 +34,7 @@ public class InteractIndicator extends GameObject {
     @NetEvent("hide_indicator")
     public static void hideIndicator() {
         indicator.hide();
+        indicator.timer = 0;
     }
 
     public static void startInteraction() {
@@ -49,7 +51,8 @@ public class InteractIndicator extends GameObject {
         if (interacting) {
             timer += deltaTime;
             if (timer >= maxTimer) {
-                timer = maxTimer;
+                Client.sendMessage("finished_interaction", getOwnerUUID());
+                hideIndicator();
             }
             if (!Input.isKeyPressed(KeyEvent.VK_E)) {
                 interacting = false;
