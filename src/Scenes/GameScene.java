@@ -32,11 +32,11 @@ public class GameScene extends Scene {
         addObject(new TileMap());
         addObject(new RectangleThing());
         addObject(new InteractIndicator());
-        //addObject(new MouseFollower());
 
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
         Server.addObject(new WeaponPickup(new Vector2(0, -100), 1));
         Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
+        Server.addObject(new WeaponPickup(new Vector2(200, -100), 3));
         Server.addObject(new EnemyManager());
         Server.addObject(new LootManager());
         Server.addObject(new RectangleThing());

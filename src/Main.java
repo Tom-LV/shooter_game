@@ -35,6 +35,16 @@ public class Main {
         Sprite.loadImage("player_mg2", artAssetPath + "player\\Smith_mg2.png",
                 new Vector2(0.25f, 0.6f));
 
+        // Uzirang sprites
+        Sprite.loadImage("player_uzirang", artAssetPath + "player\\Smith_uzirang.png",
+                new Vector2(0.25f, 0.5f));
+        Sprite.loadImage("player_uzirang1", artAssetPath + "player\\Smith_uzirang1.png",
+                new Vector2(0.18f, 0.5f));
+        Sprite.loadImage("player_uzirang2", artAssetPath + "player\\Smith_uzirang2.png",
+                new Vector2(0.19f, 0.5f));
+        Sprite.loadImage("player_uzirang3", artAssetPath + "player\\Smith_uzirang3.png",
+                new Vector2(0.18f, 0.5f));
+
         // Shotgun sprites
         Sprite.loadImage("player_sg", artAssetPath + "player\\Smith_sg.png",
                 new Vector2(0.25f, 0.6f));
@@ -78,14 +88,19 @@ public class Main {
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("shotgun", artAssetPath + "shotgun.png",
                 new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("uzirang", artAssetPath + "uzirang.png",
+                new Vector2(0.5f, 0.5f));
 
         // Weapon icons
-        Sprite.loadImage("pistol_icon", artAssetPath + "pistol_icon.png",
+        Sprite.loadImage("pistol_icon", artAssetPath + "icons\\pistol_icon.png",
                 new Vector2(0.5f, 0.5f));
-        Sprite.loadImage("rifle_icon", artAssetPath + "rifle_icon.png",
+        Sprite.loadImage("rifle_icon", artAssetPath + "icons\\rifle_icon.png",
                 new Vector2(0.5f, 0.5f));
-        Sprite.loadImage("shotgun_icon", artAssetPath + "shotgun_icon.png",
+        Sprite.loadImage("shotgun_icon", artAssetPath + "icons\\shotgun_icon.png",
                 new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("uzirang_icon", artAssetPath + "icons\\uzirang_icon.png",
+                new Vector2(0.5f, 0.5f));
+
         Sprite.loadImage("base", artAssetPath + "roads\\base.png",
                 new Vector2(0.25f, 0.25f));
 

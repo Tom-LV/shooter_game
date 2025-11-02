@@ -30,7 +30,7 @@ public class Player extends GameObject {
     static AudioClip hurtSfx = new AudioClip("src\\Assets\\audio\\hurt.wav");
     ArrayList<Animation> animations;
 
-    int ammo = 50;
+    int ammo = 150;
     int health = 100;
     int maxHealth = 100;
     int selectedWeapon = 0;
@@ -80,6 +80,12 @@ public class Player extends GameObject {
                 setSprite("player_mg");
                 WeaponSelect.selectWeapon(2);
                 break;
+            case 3:
+                reloadTime = 0.05f;
+                weaponAttackType = "shoot_uzirang";
+                setSprite("player_uzirang");
+                WeaponSelect.selectWeapon(3);
+                break;
             default:
                 break;
         }
@@ -97,7 +103,7 @@ public class Player extends GameObject {
     public static void hit(int damage) {
         List<GameObject> players = Engine.getCurrentScene().getObjectsOfClass(Player.class);
         Player player;
-        if (players.size() == 0) {
+        if (players.isEmpty()) {
             return;
         }
         AudioPlayer.playAudio(Player.hurtSfx, false);
@@ -184,10 +190,18 @@ public class Player extends GameObject {
         shotgunAnim.addFrame("player_sg4", 0.04f);
         shotgunAnim.addFrame("player_sg", 0.04f);
 
+        Animation uziAnim = new Animation();
+        uziAnim.addFrame("player_uzirang1", 0.015f);
+        uziAnim.addFrame("player_uzirang2", 0.015f);
+        uziAnim.addFrame("player_uzirang3", 0.015f);
+        uziAnim.addFrame("player_uzirang", 0.015f);
+
+
         animations = new ArrayList<>();
         animations.add(pistolAnim);
         animations.add(shotgunAnim);
         animations.add(rifleAnim);
+        animations.add(uziAnim);
         selectWeapon(-1);
         addCollider(new CircleCollider(10f, ColliderType.Dynamic));
     }

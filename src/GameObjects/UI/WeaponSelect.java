@@ -49,6 +49,9 @@ public class WeaponSelect extends GameObject {
             case 2:
                 weaponIcon.setSprite("rifle_icon");
                 break;
+            case 3:
+                weaponIcon.setSprite("uzirang_icon");
+                break;
             default:
                 weaponIcon.setSprite(null);
                 weaponIndex = -1;

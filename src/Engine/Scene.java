@@ -101,8 +101,8 @@ public abstract class Scene extends JPanel {
             }
             gameObject.draw((Graphics2D) g);
         }
-        Server.drawColliders((Graphics2D) g);
-        Engine.drawColliders((Graphics2D) g);
+//        Server.drawColliders((Graphics2D) g);
+//        Engine.drawColliders((Graphics2D) g);
     }
 
     /**

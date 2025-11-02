@@ -40,7 +40,7 @@ public class WeaponPickup extends Pickup {
             case 1:
                 setSprite("shotgun");
                 scale = new Vector2(0.07f, 0.07f);
-                pierce = true;
+                pierce = false;
                 addCollider(new CircleCollider(10, ColliderType.None));
                 pickupDistance = 30f;
                 speed = 600f;
@@ -49,6 +49,13 @@ public class WeaponPickup extends Pickup {
                 setSprite("rifle");
                 scale = new Vector2(0.07f, 0.07f);
                 pierce = false;
+                addCollider(new CircleCollider(10, ColliderType.None));
+                pickupDistance = 30f;
+                break;
+            case 3:
+                setSprite("uzirang");
+                scale = new Vector2(0.045f, 0.045f);
+                pierce = true;
                 addCollider(new CircleCollider(10, ColliderType.None));
                 pickupDistance = 30f;
                 break;
@@ -105,7 +112,7 @@ public class WeaponPickup extends Pickup {
         if (thrownTimer < 0.5f) {
             position = position.add(velocity.multiply(speed * deltaTime));
             rotation += 600 * deltaTime;
-        } else if (weaponIndex == 1) {
+        } else if (weaponIndex == 3) {
             if (thrownTimer < 1.5f) {
                 position = position.add(velocity.multiply(-speed * deltaTime));
                 rotation += 600 * deltaTime;
@@ -116,7 +123,7 @@ public class WeaponPickup extends Pickup {
     @Override
     public void onCollisionEnter(CollisionEvent e) {
 
-        if (thrownTimer < 0.5f || (weaponIndex == 1 && thrownTimer < 1.5f)) {
+        if (thrownTimer < 0.5f || (weaponIndex == 3 && thrownTimer < 1.5f)) {
             if (e.getOther().getParent() instanceof Damagable d) {
                 d.takeDamage(damage);
                 if (pierce) {

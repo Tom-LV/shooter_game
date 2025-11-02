@@ -33,8 +33,7 @@ public class CircleCollider extends Collider {
         panelPos = panelPos.add(panelDimensions);
         at.translate(panelPos.x, panelPos.y);
 
-        Vector2 zoom = new Vector2(1 / Camera.currentCamera.zoom, 1 / Camera.currentCamera.zoom);
-        g2d.drawOval((int) (panelPos.x), (int) (panelPos.y), (int) (radius / zoom.x), (int) (radius / zoom.y));
+        g2d.drawOval((int) (panelPos.x), (int) (panelPos.y), (int) (radius / Camera.currentCamera.zoom), (int) (radius / Camera.currentCamera.zoom));
     }
 
     @Override

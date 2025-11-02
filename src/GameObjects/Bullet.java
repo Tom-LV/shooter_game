@@ -66,6 +66,14 @@ public class Bullet extends GameObject {
         Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-5.0f, 5.0f), 15));
     }
 
+    @NetEvent("shoot_uzirang")
+    public static void shootUzirang(Vector2 position, float rotation) {
+        Random rng = new Random();
+        Vector2 offset = new Vector2(55f, 5f).rotate(rotation);
+        Vector2 bulletPosition = position.add(offset);
+        Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-15.0f, 15.0f), 5));
+    }
+
     /**
      * Creates a bullet.
      * @param position bullet position
