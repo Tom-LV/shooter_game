@@ -2,9 +2,14 @@ package GameObjects;
 
 import Engine.Engine;
 import Engine.GameObject;
+import Engine.Networking.Server;
+import Engine.Physics.ColliderType;
+import Engine.Physics.RectCollider;
 import Engine.Sprite;
 import Engine.Vector2;
 import Engine.Camera;
+import Engine.GameObjectType;
+import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -17,9 +22,18 @@ public class TileMap extends GameObject {
     Random rng;
     int height = 20;
     int width = 20;
+    MapColliders mapColliders;
 
     @Override
     public void setup() {
+        mapColliders = new  MapColliders();
+        if (getGameObjectType() == GameObjectType.Server) {
+            Server.addObject(mapColliders);
+            mapColliders.setGameObjectType(GameObjectType.Server);
+
+        } else {
+            Engine.addObject(mapColliders);
+        }
         rng = new Random(1235233);
         generateTileMap();
         setLayer(-1000);
@@ -85,7 +99,39 @@ public class TileMap extends GameObject {
         tiles[10][9] = "";
         tiles[11][8] = "";
         tiles[11][9] = "";
+        generateColliders();
+    }
 
+    public void generateColliders() {
+        RectCollider collider = new RectCollider(new Vector2(525f, 10f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(12, 15));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(778f, 10f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(12, 785));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(490f, 10f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(300, 420));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(10f, 780f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(12, 15));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(10f, 375f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(780, 420));
+        mapColliders.addCollider(collider);
+
+        collider = new RectCollider(new Vector2(10f, 100f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(300, 15));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(10f, 150f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(300, 280));
+        mapColliders.addCollider(collider);
+
+        collider = new RectCollider(new Vector2(10f, 100f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(527, 15));
+        mapColliders.addCollider(collider);
+        collider = new RectCollider(new Vector2(10f, 150f), new Vector2(0, 0), ColliderType.Static);
+        collider.setPosition(new Vector2(527, 280));
+        mapColliders.addCollider(collider);
     }
 
     @Override

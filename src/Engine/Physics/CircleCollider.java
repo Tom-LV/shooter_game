@@ -31,15 +31,16 @@ public class CircleCollider extends Collider {
 
         Vector2 panelPos = parent.position.subtract(Camera.currentCamera.position).subtract(new Vector2(radius, radius)).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
+        panelPos = panelPos.add(position);
         at.translate(panelPos.x, panelPos.y);
 
-        g2d.drawOval((int) (panelPos.x), (int) (panelPos.y), (int) (radius / Camera.currentCamera.zoom), (int) (radius / Camera.currentCamera.zoom));
+        g2d.drawOval((int) (panelPos.x), (int) (panelPos.y), (int) (radius * 2 / Camera.currentCamera.zoom), (int) (radius * 2 / Camera.currentCamera.zoom));
     }
 
     @Override
     public void checkCollision(Collider other) {
         if (other instanceof CircleCollider c) {
-            Vector2 distance = c.parent.position.subtract(parent.position);
+            Vector2 distance = c.parent.position.add(c.position).subtract(parent.position.add(c.position));
             float circleSum = c.radius + radius;
             if (distance.length() < circleSum) {
                 collided(new CollisionEvent(other, distance.normalize()));
@@ -58,7 +59,7 @@ public class CircleCollider extends Collider {
             Vector2 rectOrigin = new Vector2(rect.dimensions.x * rect.pivot.x, rect.dimensions.y * rect.pivot.y);
 
             // Circle position relative to rectangle
-            Vector2 circleLocal = parent.position.subtract(rect.parent.position);
+            Vector2 circleLocal = parent.position.add(position).subtract(rect.parent.position.add(rect.position));
             circleLocal = circleLocal.rotate(-rect.parent.rotation).add(rectOrigin);
 
             // Clamp circle center to rectangle bounds

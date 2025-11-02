@@ -23,23 +23,23 @@ public class GameScene extends Scene {
     public void setupScene() {
         setBackground(new Color(35, 42, 46));
 
-        Player player = new Player(new Vector2(0, 0));
+        Player player = new Player(new Vector2(0, -800));
         addNetworkObject(player);
         addNetworkObject(new HealthBar(player));
 
         WeaponSelect.createIcons(this);
         addObject(new AmmoLabel(player));
         addObject(new TileMap());
-        addObject(new RectangleThing());
         addObject(new InteractIndicator());
+        addObject(new Doors());
 
+        Server.addObject(new TileMap());
         Server.addObject(new WeaponPickup(new Vector2(-100, -100), 0));
         Server.addObject(new WeaponPickup(new Vector2(0, -100), 1));
         Server.addObject(new WeaponPickup(new Vector2(100, -100), 2));
         Server.addObject(new WeaponPickup(new Vector2(200, -100), 3));
         Server.addObject(new EnemyManager());
         Server.addObject(new LootManager());
-        Server.addObject(new RectangleThing());
 
     }
 }

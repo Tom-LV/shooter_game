@@ -12,6 +12,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -30,7 +31,7 @@ public class GameObject implements Serializable {
     public Sprite currentSprite;
     private final Class<?> myClass;
     private UUID ownerUUID;
-    private Collider collider;
+    private final ArrayList<Collider> colliders = new ArrayList<>();
 
     private boolean playingAnimation = false;
     boolean needsLayerChange = false;
@@ -49,6 +50,10 @@ public class GameObject implements Serializable {
 
     public void setGameObjectType(GameObjectType gameObjectType) {
         this.gameObjectType = gameObjectType;
+    }
+
+    public GameObjectType getGameObjectType() {
+        return gameObjectType;
     }
 
     /**
@@ -291,7 +296,7 @@ public class GameObject implements Serializable {
     }
 
     public void addCollider(Collider collider) {
-        this.collider = collider;
+        colliders.add(collider);
         collider.setParent(this);
         if (gameObjectType == GameObjectType.Server) {
             Server.addCollider(collider);
@@ -309,16 +314,15 @@ public class GameObject implements Serializable {
     }
 
     public void cleanUp() {
-        if (this.collider != null) {
+        for (Collider collider : colliders) {
             if (gameObjectType == GameObjectType.Server) {
                 Server.removeCollider(collider);
             } else {
                 Engine.removeCollider(collider);
             }
-            this.collider.clearListeners();
-            this.collider = null;
-
+            collider.clearListeners();
         }
+        colliders.clear();
     }
 
     public void onCollision(CollisionEvent collider) {

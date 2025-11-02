@@ -204,6 +204,7 @@ public class Player extends GameObject {
         animations.add(uziAnim);
         selectWeapon(-1);
         addCollider(new CircleCollider(10f, ColliderType.Dynamic));
+
     }
 
     @Override

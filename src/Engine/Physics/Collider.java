@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 public abstract class Collider {
     ColliderType type = ColliderType.None;
     GameObject parent;
+    Vector2 position = new Vector2(0, 0);
 
     ArrayList<Consumer<CollisionEvent>> collisionEnterListeners = new ArrayList<>();
     ArrayList<Consumer<CollisionEvent>> collisionExitListeners = new ArrayList<>();
@@ -21,6 +22,10 @@ public abstract class Collider {
     Set<CollisionEvent> newCollisions = new HashSet<>();
 
     Vector2 newPosition = new Vector2(0, 0);
+
+    public void setPosition(Vector2 position) {
+        this.position = position;
+    }
 
     public void draw(Graphics2D g) {
         return;
@@ -96,8 +101,6 @@ public abstract class Collider {
     }
 
     protected void collided(CollisionEvent collisionEvent) {
-        if (!newCollisions.contains(collisionEvent)) {
-            newCollisions.add(collisionEvent);
-        }
+        newCollisions.add(collisionEvent);
     }
 }
