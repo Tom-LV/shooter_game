@@ -11,6 +11,10 @@ public class WeaponManager {
         weaponOwner = gameObject;
     }
 
+    public static boolean isWeaponPickedUp() {
+        return weaponOwner != null;
+    }
+
     public static void dropWeapon() {
         weaponOwner = null;
     }

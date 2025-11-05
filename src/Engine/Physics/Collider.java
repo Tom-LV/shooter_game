@@ -61,6 +61,10 @@ public abstract class Collider {
         return this.parent;
     }
 
+    public ColliderType getType() {
+        return type;
+    }
+
     public abstract void checkCollision(Collider other);
 
     private void callOnCollision(CollisionEvent collider) {

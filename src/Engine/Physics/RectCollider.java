@@ -19,16 +19,31 @@ public class RectCollider extends Collider {
     @Override
     public void checkCollision(Collider other) {
         if (other instanceof CircleCollider c) {
-            Vector2 start = new Vector2(dimensions.x * pivot.x, dimensions.y * pivot.y);
-            start = start.rotate(parent.rotation);
-            start = parent.position.subtract(start);
+            Vector2 rectOrigin = new Vector2(dimensions.x * pivot.x, dimensions.y * pivot.y);
 
-            Vector2 distance = other.parent.position.subtract(start);
-            Vector2 relativePos = distance.rotate(-parent.rotation);
-            if (relativePos.x > 0 && relativePos.y > 0) {
-                if (relativePos.x < dimensions.x && relativePos.y < dimensions.y) {
-                    collided(new  CollisionEvent(other, new Vector2(relativePos.x, relativePos.y)));
-                }
+            // Circle position relative to rectangle
+            Vector2 circleLocal = c.parent.position.add(c.position).subtract(parent.position.add(position));
+            circleLocal = circleLocal.rotate(-parent.rotation).add(rectOrigin);
+
+            // Clamp circle center to rectangle bounds
+            float closestX = Math.max(0, Math.min(dimensions.x, circleLocal.x));
+            float closestY = Math.max(0, Math.min(dimensions.y, circleLocal.y));
+
+            Vector2 closestPoint = new Vector2(closestX, closestY);
+
+            // Normal in local space
+            Vector2 normalLocal = circleLocal.subtract(closestPoint);
+            float dist = normalLocal.length();
+
+            // Check collision
+            if (dist < c.radius) {
+                Vector2 normalWorld;
+                if (dist != 0)
+                    normalWorld = normalLocal.normalize().rotate(parent.rotation);
+                else
+                    normalWorld = new Vector2(0, -1).rotate(parent.rotation); // fallback normal
+
+                collided(new CollisionEvent(other, normalWorld));
             }
         }
     }

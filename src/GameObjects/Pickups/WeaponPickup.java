@@ -7,6 +7,7 @@ import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Physics.CollisionEvent;
 import Engine.Vector2;
+import GameObjects.GameManagment.ServerManager;
 import GameObjects.WeaponManager;
 import Interfaces.Damagable;
 import java.util.List;
@@ -19,12 +20,18 @@ public class WeaponPickup extends Pickup {
     int weaponIndex = 0;
     boolean pierce = true;
     int damage = 10;
+    float maxThrowTimer = 0.5f;
 
     @NetEvent("throw_weapon")
     public static void weaponThrow(Vector2 position, float rotation, int weapon) {
+        WeaponManager.dropWeapon();
+        if (!ServerManager.isRoundStarted()) {
+            ServerManager.spawnGunSelection();
+            return;
+        }
         WeaponPickup weaponPickup = new WeaponPickup(position, rotation);
         Server.addObject(weaponPickup);
-        WeaponManager.dropWeapon();
+
         weaponPickup.weaponIndex = weapon;
     }
 
@@ -85,6 +92,7 @@ public class WeaponPickup extends Pickup {
         setLayer(-10);
         despawnTime = -1;
         setWeapon(weaponIndex);
+        maxThrowTimer = 0.5f;
     }
 
     WeaponPickup(Vector2 position, float rotation) {
@@ -109,11 +117,11 @@ public class WeaponPickup extends Pickup {
         super.update(deltaTime);
         thrownTimer += deltaTime;
 
-        if (thrownTimer < 0.5f) {
+        if (thrownTimer < maxThrowTimer) {
             position = position.add(velocity.multiply(speed * deltaTime));
             rotation += 600 * deltaTime;
         } else if (weaponIndex == 3) {
-            if (thrownTimer < 1.5f) {
+            if (thrownTimer < maxThrowTimer + 1f) {
                 position = position.add(velocity.multiply(-speed * deltaTime));
                 rotation += 600 * deltaTime;
             }
@@ -123,13 +131,14 @@ public class WeaponPickup extends Pickup {
     @Override
     public void onCollisionEnter(CollisionEvent e) {
 
-        if (thrownTimer < 0.5f || (weaponIndex == 3 && thrownTimer < 1.5f)) {
+        if (thrownTimer < maxThrowTimer || (weaponIndex == 3 && thrownTimer < maxThrowTimer + 1f)) {
             if (e.getOther().getParent() instanceof Damagable d) {
                 d.takeDamage(damage);
                 if (pierce) {
                     return;
                 }
             }
+            maxThrowTimer += 0.1f;
             float dot = velocity.dot(e.getNormal());
             velocity = velocity.subtract(e.getNormal().multiply(2 * dot));
         }

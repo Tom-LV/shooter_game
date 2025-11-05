@@ -5,6 +5,7 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Vector2;
+import GameObjects.GameManagment.ServerManager;
 import Interfaces.Damagable;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class EnemySpawner extends GameObject implements Damagable {
         setLayer(-99);
         addCollider(new CircleCollider(35, ColliderType.Static));
         for (int i = 0; i < 5; i++) {
-            spawnEnemy();
+            //spawnEnemy();
         }
     }
 
@@ -37,7 +38,7 @@ public class EnemySpawner extends GameObject implements Damagable {
     public void update(float deltaTime) {
         time += deltaTime;
 
-        if (time >= rng.nextFloat(5.0f, 10.0f)) {
+        if (ServerManager.isRoundStarted() && time >= rng.nextFloat(5.0f, 10.0f)) {
             for (int i = 0; i < 1; i++) {
                 spawnEnemy();
             }

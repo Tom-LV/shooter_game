@@ -115,7 +115,10 @@ public class Bullet extends GameObject {
             if (pierce <= 0) {
                 Server.removeObject(this);
             }
-
+            return;
+        }
+        if (e.getOther().getType() == ColliderType.Static) {
+            Server.removeObject(this);
         }
     }
 }

@@ -185,11 +185,11 @@ public class Engine {
      * Destroy given GameObject in currently opened scene.
      */
     public static void destroy(GameObject gameObject) {
-        getCurrentScene().destroyNetworkObject(gameObject);
+        getCurrentScene().destroyObject(gameObject);
     }
 
     public static void addObject(GameObject gameObject) {
-        getCurrentScene().addNetworkObject(gameObject);
+        getCurrentScene().addObject(gameObject);
     }
 
 

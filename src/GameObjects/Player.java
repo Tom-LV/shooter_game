@@ -12,6 +12,7 @@ import Engine.Physics.ColliderType;
 import Engine.Sound.AudioClip;
 import Engine.Sound.AudioPlayer;
 import Engine.Vector2;
+import GameObjects.GameManagment.ClientManager;
 import GameObjects.UI.WeaponSelect;
 
 import java.awt.event.KeyEvent;
@@ -246,7 +247,7 @@ public class Player extends GameObject {
             playAnimation(animations.get(selectedWeapon));
         }
 
-        if (Input.isKeyPressed(KeyEvent.VK_Q) && hasWeapon) {
+        if (Input.isKeyPressed(KeyEvent.VK_Q) && hasWeapon && !ClientManager.isReady()) {
             hasWeapon = false;
             Client.sendMessage("throw_weapon", position, rotation, selectedWeapon);
             selectWeapon(-1);
