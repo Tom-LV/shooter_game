@@ -9,6 +9,7 @@ import GameObjects.GameManagment.ServerManager;
 import GameObjects.GameManagment.ClientManager;
 import GameObjects.Loot.InteractIndicator;
 import GameObjects.Loot.LootManager;
+import GameObjects.Pickups.PickupManager;
 import GameObjects.UI.AmmoLabel;
 import GameObjects.UI.HealthBar;
 import GameObjects.UI.WeaponSelect;
@@ -29,10 +30,11 @@ public class GameScene extends Scene {
         addNetworkObject(new HealthBar(player));
 
         WeaponSelect.createIcons(this);
-        addObject(new AmmoLabel(player));
+        addObject(new AmmoLabel());
         addObject(new TileMap());
         addObject(new InteractIndicator());
         addObject(new ClientManager(player));
+        PickupManager.createPickup(new Vector2(0, -400), "bolt");
 
 
         Server.addObject(new TileMap());

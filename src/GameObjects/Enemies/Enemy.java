@@ -5,6 +5,8 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Vector2;
+import GameObjects.Pickups.Pickup;
+import GameObjects.Pickups.PickupManager;
 import GameObjects.Player;
 import Interfaces.Damagable;
 
@@ -109,5 +111,6 @@ public class Enemy extends GameObject implements Damagable {
     @Override
     public void onKill() {
         Server.removeObject(this);
+        PickupManager.createPickup(position, "bolt");
     }
 }

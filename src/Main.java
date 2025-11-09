@@ -100,8 +100,9 @@ public class Main {
                 new Vector2(0.5f, 0.5f));
         Sprite.loadImage("uzirang_icon", artAssetPath + "icons\\uzirang_icon.png",
                 new Vector2(0.5f, 0.5f));
+        Sprite.loadImage("bolt", artAssetPath + "bolt.png");
 
-        Sprite.loadImage("base", artAssetPath + "roads\\base.png",
+        Sprite.loadImage("base", artAssetPath + "roads\\base1.png",
                 new Vector2(0.25f, 0.25f));
 
         // Roads

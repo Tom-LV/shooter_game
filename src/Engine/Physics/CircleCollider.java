@@ -29,7 +29,7 @@ public class CircleCollider extends Collider {
         Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2,
                 Engine.getCurrentScene().getHeight() / 2);
 
-        Vector2 panelPos = parent.position.subtract(Camera.currentCamera.position).subtract(new Vector2(radius, radius)).divide(Camera.currentCamera.zoom);
+        Vector2 panelPos = parent.position.subtract(Camera.getRenderPosition()).subtract(new Vector2(radius, radius)).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
         panelPos = panelPos.add(position);
         at.translate(panelPos.x, panelPos.y);

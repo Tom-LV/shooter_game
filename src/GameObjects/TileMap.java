@@ -37,7 +37,7 @@ public class TileMap extends GameObject {
         rng = new Random(1235233);
         generateTileMap();
         setLayer(-1000);
-        scale = new Vector2(1.02f, 1.02f);
+        scale = new Vector2(1f, 1f);
     }
 
     private void generateTileMap() {
@@ -153,7 +153,7 @@ public class TileMap extends GameObject {
         Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2,
                 Engine.getCurrentScene().getHeight() / 2);
 
-        Vector2 panelPos = position.subtract(Camera.currentCamera.position).divide(Camera.currentCamera.zoom);
+        Vector2 panelPos = position.subtract(Camera.getRenderPosition()).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
         at.translate(panelPos.x, panelPos.y);
         at.scale(scale.x / Camera.currentCamera.zoom, scale.y / Camera.currentCamera.zoom);

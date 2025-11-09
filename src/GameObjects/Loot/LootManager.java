@@ -3,6 +3,7 @@ package GameObjects.Loot;
 import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
+import GameObjects.GameManagment.ServerManager;
 import GameObjects.Pickups.PickupManager;
 
 import java.util.Random;
@@ -18,7 +19,7 @@ public class LootManager extends GameObject {
     @Override
     public void update(float deltaTime) {
         timer += deltaTime;
-        if (timer >= 1f) {
+        if (ServerManager.isRoundStarted() && timer >= 1f) {
             float x = rng.nextFloat(-1600.0f, 1600.0f);
             float y = rng.nextFloat(-1600.0f, 1600.0f);
             if (rng.nextFloat() >= 0.75f) {

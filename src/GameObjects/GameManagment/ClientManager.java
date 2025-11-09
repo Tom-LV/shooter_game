@@ -38,9 +38,11 @@ public class ClientManager extends GameObject {
         instance.firstDoorOpen = true;
     }
 
-    @NetEvent("on_round_end")
+    @NetEvent("round_ended")
     public static void onRoundEnd() {
         player.position = new Vector2(0, -800);
+        instance.firstDoorOpen = true;
+        instance.secondDoorOpen = false;
     }
 
     @Override

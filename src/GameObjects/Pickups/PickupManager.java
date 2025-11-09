@@ -24,10 +24,17 @@ public class PickupManager {
             case "weapon_pickup":
                 WeaponPickup weaponPickup = new WeaponPickup(position, 0);
                 Server.addObject(weaponPickup);
+                break;
             case "ammo_pickup":
                 AmmoPickup ammoPickup = new AmmoPickup();
                 ammoPickup.position = position;
                 Server.addObject(ammoPickup);
+                break;
+            case "bolt":
+                BoltPickup boltPickup = new BoltPickup();
+                boltPickup.position = position;
+                Server.addObject(boltPickup);
+                break;
             default:
                 break;
         }

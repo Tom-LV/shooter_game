@@ -31,7 +31,10 @@ public class Player extends GameObject {
     static AudioClip hurtSfx = new AudioClip("src\\Assets\\audio\\hurt.wav");
     ArrayList<Animation> animations;
 
+    static Player instance;
+
     int ammo = 150;
+    int bolts = 0;
     int health = 100;
     int maxHealth = 100;
     int selectedWeapon = 0;
@@ -51,6 +54,14 @@ public class Player extends GameObject {
 
     public int getAmmo() {
         return ammo;
+    }
+
+    public int getBolts() {
+        return bolts;
+    }
+
+    public void addBolts(int bolts) {
+        this.bolts += bolts;
     }
 
     private void selectWeapon(int index) {
@@ -94,6 +105,11 @@ public class Player extends GameObject {
 
     public Player(Vector2 position) {
         this.position = position;
+        instance = this;
+    }
+
+    public static Player getInstance() {
+        return instance;
     }
 
     /**
@@ -118,6 +134,11 @@ public class Player extends GameObject {
             player.position = new Vector2(0, 0);
             player.invTimer = 1f;
         }
+    }
+
+    @NetEvent("bolt_spawn")
+    public static void spawnBolt(Vector2 pos) {
+        Engine.addObject(new Bolt(pos));
     }
 
     /**
@@ -210,6 +231,7 @@ public class Player extends GameObject {
 
     @Override
     public void update(float deltaTime) {
+        Camera.currentCamera.position = position;
         time += deltaTime;
         if (invTimer > 0) {
             invTimer -= deltaTime;
@@ -253,7 +275,7 @@ public class Player extends GameObject {
             selectWeapon(-1);
         }
 
-        Camera.currentCamera.position = position;
+
 
     }
     

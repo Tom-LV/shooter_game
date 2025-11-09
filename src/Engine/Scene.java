@@ -86,6 +86,7 @@ public abstract class Scene extends JPanel {
     }
 
     private void draw(Graphics g) {
+        Camera.setRenderPos();
         Runnable task;
         while ((task = pendingDrawActions.poll()) != null) {
             try {

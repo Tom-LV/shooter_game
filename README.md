@@ -18,14 +18,14 @@
   - [ ] Add enemy spawner generator, that does not put them on top of colliders
   - [ ] Add loot spawner that does not put them on colliders
 - [ ] Rounds
-  - [ ] Add a main base(simple rectangle)
-  - [ ] Add weapon selection
-    - [ ] Weapons are spawned on the ground
-    - [ ] Other weapons despawn when picked up
-    - [ ] When a weapon is dropped all weapon reappear
-  - [ ] Add an area where if all players are in it, they are transported to the game area
-  - [ ] Add a timer for the game
-  - [ ] After the timer expires the players are sent back to main base
+  - [X] Add a main base(simple rectangle)
+  - [X] Add weapon selection
+    - [X] Weapons are spawned on the ground
+    - [X] Other weapons despawn when picked up
+    - [X] When a weapon is dropped all weapon reappear
+  - [X] Add an area where if all players are in it, they are transported to the game area
+  - [X] Add a timer for the game
+  - [X] After the timer expires the players are sent back to main base
 - [ ] Death
   - [ ] When a player dies, he is despawned
   - [ ] Players cannot be revived

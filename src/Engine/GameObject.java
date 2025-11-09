@@ -187,7 +187,7 @@ public class GameObject implements Serializable {
         Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2, 
             Engine.getCurrentScene().getHeight() / 2);
         
-        Vector2 panelPos = position.subtract(Camera.currentCamera.position).divide(Camera.currentCamera.zoom);
+        Vector2 panelPos = position.subtract(Camera.getRenderPosition()).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
         at.translate(panelPos.x, panelPos.y);
         at.rotate(Math.toRadians(rotation));

@@ -3,9 +3,6 @@ package GameObjects.GameManagment;
 import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
-import Engine.Physics.ColliderType;
-import Engine.Physics.CollisionEvent;
-import Engine.Physics.RectCollider;
 import Engine.Vector2;
 import GameObjects.Pickups.WeaponPickup;
 import GameObjects.WeaponManager;
@@ -19,6 +16,25 @@ public class ServerManager extends GameObject {
     ArrayList<UUID> players = new ArrayList<UUID>();
     boolean ready = false;
     float readyTimer = 0f;
+    float roundTimer = 0f;
+
+    static ArrayList<Runnable> onRoundStartedListeners = new ArrayList<>();
+    static ArrayList<Runnable> onRoundFinishedListeners = new ArrayList<>();
+
+    public static void addOnRoundStartedListener(Runnable listener) {
+        onRoundStartedListeners.add(listener);
+    }
+
+    public static void removeOnRoundStartedListener(Runnable listener) {
+        onRoundStartedListeners.remove(listener);
+    }
+    public static void addOnRoundFinishedListener(Runnable listener) {
+        onRoundFinishedListeners.add(listener);
+    }
+
+    public static void removeOnRoundFinishedListener(Runnable listener) {
+        onRoundFinishedListeners.remove(listener);
+    }
 
     static ServerManager instance;
 
@@ -76,10 +92,29 @@ public class ServerManager extends GameObject {
             return;
         }
         roundStarted = true;
+        roundTimer = 0f;
         ready = false;
         playersReady = 0;
         for (UUID uuid : players) {
             Server.sendMessage("round_started", uuid);
+        }
+        for (Runnable listener : onRoundStartedListeners) {
+            listener.run();
+        }
+    }
+
+    void sendRoundEnded() {
+        if (!roundStarted) {
+            return;
+        }
+        roundStarted = false;
+        roundTimer = 0f;
+        playersReady = 0;
+        for (UUID uuid : players) {
+            Server.sendMessage("round_ended", uuid);
+        }
+        for (Runnable listener : onRoundFinishedListeners) {
+            listener.run();
         }
     }
 
@@ -105,6 +140,12 @@ public class ServerManager extends GameObject {
             readyTimer += deltaTime;
             if (readyTimer >= 3f) {
                 sendRoundStarted();
+            }
+        }
+        if (roundStarted) {
+            roundTimer += deltaTime;
+            if (roundTimer >= 100f) {
+                sendRoundEnded();
             }
         }
     }

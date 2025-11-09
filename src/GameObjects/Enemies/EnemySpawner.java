@@ -29,8 +29,12 @@ public class EnemySpawner extends GameObject implements Damagable {
         scale = new Vector2(0.3f, 0.3f);
         setLayer(-99);
         addCollider(new CircleCollider(35, ColliderType.Static));
+        ServerManager.addOnRoundStartedListener(this::onRoundStarted);
+    }
+
+    void onRoundStarted() {
         for (int i = 0; i < 5; i++) {
-            //spawnEnemy();
+            spawnEnemy();
         }
     }
 
@@ -60,6 +64,8 @@ public class EnemySpawner extends GameObject implements Damagable {
 
         float x = position.x + rng.nextFloat(-10, 10);
         float y = position.y + rng.nextFloat(-10, 10);
+        x = Math.round(x/400)*400;
+        y = Math.round(y/400)*400;
         Enemy enemy = new Enemy(new Vector2(x, y));
         Server.addObject(enemy);
         time = 0;
@@ -84,5 +90,10 @@ public class EnemySpawner extends GameObject implements Damagable {
     @Override
     public void onKill() {
         Server.removeObject(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        ServerManager.removeOnRoundStartedListener(this::onRoundStarted);
     }
 }

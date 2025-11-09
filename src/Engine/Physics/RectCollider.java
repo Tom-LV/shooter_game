@@ -59,7 +59,7 @@ public class RectCollider extends Collider {
         Vector2 panelDimensions = new Vector2(Engine.getCurrentScene().getWidth() / 2,
                 Engine.getCurrentScene().getHeight() / 2);
 
-        Vector2 panelPos = parent.position.subtract(Camera.currentCamera.position).divide(Camera.currentCamera.zoom);
+        Vector2 panelPos = parent.position.subtract(Camera.getRenderPosition()).divide(Camera.currentCamera.zoom);
         panelPos = panelPos.add(panelDimensions);
         panelPos = panelPos.add(position);
 
