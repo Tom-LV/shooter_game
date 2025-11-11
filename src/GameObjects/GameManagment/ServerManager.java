@@ -51,7 +51,7 @@ public class ServerManager extends GameObject {
         if (!instance.players.contains(client)) {
             instance.players.add(client);
         }
-        if (instance.playersReady == 2 && WeaponManager.isWeaponPickedUp()) {
+        if (instance.playersReady == Server.getClientCount() && WeaponManager.isWeaponPickedUp()) {
             instance.sendReady();
         }
 

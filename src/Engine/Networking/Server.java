@@ -30,7 +30,7 @@ public class Server {
     private static ConnectionData serverConnectionData;
     private static float tick = 0f;
 
-    private static final int playerCount = 2;
+    private static final int playerCount = 4;
     private static Thread serverThread;
 
     private static PhysicsManager physicsManager = new PhysicsManager();
@@ -41,6 +41,10 @@ public class Server {
         serverConnectionData = new ConnectionData(socket.getInetAddress(), port, UUID.randomUUID());
         serverConnectionData.onObjectRemoved(GameObject::onDestroy);
         startServerThread();
+    }
+
+    public static int getClientCount() {
+        return connections.size();
     }
 
     private static void startServerThread() throws SocketException {
