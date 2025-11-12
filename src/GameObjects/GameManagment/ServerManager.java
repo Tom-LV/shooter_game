@@ -4,6 +4,7 @@ import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Vector2;
+import GameObjects.Enemies.EnemyManager;
 import GameObjects.Pickups.WeaponPickup;
 import GameObjects.WeaponManager;
 
@@ -44,10 +45,10 @@ public class ServerManager extends GameObject {
 
     @NetEvent("player_entered_ready")
     public static void playerEnteredReady(UUID client) {
-        if (instance.roundStarted) {
+        instance.playersReady++;
+        if (isRoundStarted()) {
             return;
         }
-        instance.playersReady++;
         if (!instance.players.contains(client)) {
             instance.players.add(client);
         }
@@ -59,10 +60,10 @@ public class ServerManager extends GameObject {
 
     @NetEvent("player_left_ready")
     public static void playerLeftReady() {
+        instance.playersReady--;
         if (instance.roundStarted) {
             return;
         }
-        instance.playersReady--;
         instance.sendNotReady();
     }
 
@@ -94,7 +95,6 @@ public class ServerManager extends GameObject {
         roundStarted = true;
         roundTimer = 0f;
         ready = false;
-        playersReady = 0;
         for (UUID uuid : players) {
             Server.sendMessage("round_started", uuid);
         }
@@ -108,14 +108,18 @@ public class ServerManager extends GameObject {
             return;
         }
         roundStarted = false;
+        ready = false;
         roundTimer = 0f;
-        playersReady = 0;
         for (UUID uuid : players) {
             Server.sendMessage("round_ended", uuid);
         }
         for (Runnable listener : onRoundFinishedListeners) {
             listener.run();
         }
+
+        WeaponPickup.destroyAllGuns();
+        spawnGunSelection();
+        EnemyManager.destroyAllEnemies();
     }
 
     public static void spawnGunSelection() {
@@ -144,7 +148,7 @@ public class ServerManager extends GameObject {
         }
         if (roundStarted) {
             roundTimer += deltaTime;
-            if (roundTimer >= 100f) {
+            if (roundTimer >= 60f) {
                 sendRoundEnded();
             }
         }

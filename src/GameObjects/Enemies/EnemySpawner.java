@@ -73,6 +73,9 @@ public class EnemySpawner extends GameObject implements Damagable {
 
     @Override
     public void takeDamage(int amount) {
+        if (isDead()) {
+            return;
+        }
         health -= amount;
         if (health <= 0) {
             onKill();
@@ -89,11 +92,12 @@ public class EnemySpawner extends GameObject implements Damagable {
 
     @Override
     public void onKill() {
+        ServerManager.removeOnRoundStartedListener(this::onRoundStarted);
         Server.removeObject(this);
     }
 
     @Override
-    public void onDestroy() {
-        ServerManager.removeOnRoundStartedListener(this::onRoundStarted);
+    public boolean isDead() {
+        return health <= 0;
     }
 }

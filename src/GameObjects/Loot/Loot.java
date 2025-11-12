@@ -28,7 +28,19 @@ public class Loot extends GameObject {
             Loot loot =  playerLoot.get(playerUUID);
             loot.onInteract(playerGameObjects.get(playerUUID));
             playerLoot.remove(playerUUID);
+
+            List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
+            for (GameObject playerObject : playerObjects) {
+                if (playerLoot.containsKey(playerObject.getOwnerUUID())) {
+                    if (playerLoot.get(playerObject.getOwnerUUID()) == loot) {
+                        Server.sendMessage("hide_indicator", playerObject.getOwnerUUID());
+                        playerLoot.remove(playerObject.getOwnerUUID());
+                    }
+                }
+            }
         }
+
+
     }
 
     @Override

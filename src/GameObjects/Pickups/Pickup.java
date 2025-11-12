@@ -15,6 +15,7 @@ public abstract class Pickup extends GameObject {
     float despawnTime = 10f;
     float time = 0;
     boolean canPickUp = true;
+    boolean pickedUp = false;
 
     public abstract void onPickUp(GameObject player);
 
@@ -33,7 +34,8 @@ public abstract class Pickup extends GameObject {
             }
         }
 
-        if (closestDistance < pickupDistance && canPickUp) {
+        if (closestDistance < pickupDistance && canPickUp && !pickedUp) {
+            pickedUp = true;
             onPickUp(closestPlayer);
         }
 

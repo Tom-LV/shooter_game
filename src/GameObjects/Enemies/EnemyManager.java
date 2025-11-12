@@ -4,6 +4,7 @@ import Engine.GameObject;
 import Engine.Networking.Server;
 import Engine.Vector2;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -25,5 +26,12 @@ public class EnemyManager extends GameObject {
         float y = rng.nextFloat(-2000, 2000);
         EnemySpawner enemySpawner = new EnemySpawner(new Vector2(x, y));
         Server.addObject(enemySpawner);
+    }
+
+    public static void destroyAllEnemies() {
+        List<GameObject> enemies = Server.getServerObjectsOfClass(Enemy.class);
+        for (GameObject object : enemies) {
+            Server.removeObject(object);
+        }
     }
 }

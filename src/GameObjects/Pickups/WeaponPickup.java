@@ -78,8 +78,12 @@ public class WeaponPickup extends Pickup {
         }
         Server.sendMessage("weapon_pickup", player.getOwnerUUID(), weaponIndex);
         Server.removeObject(this);
-        List<GameObject> weaponPickups = Server.getServerObjectsOfClass(WeaponPickup.class);
         WeaponManager.weaponPickup(player);
+        destroyAllGuns();
+    }
+
+    public static void destroyAllGuns() {
+        List<GameObject> weaponPickups = Server.getServerObjectsOfClass(WeaponPickup.class);
         for (GameObject gameObject : weaponPickups){
             WeaponPickup weaponPickup = (WeaponPickup) gameObject;
             weaponPickup.canPickUp = false;

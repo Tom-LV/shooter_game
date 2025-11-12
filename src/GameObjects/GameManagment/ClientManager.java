@@ -43,6 +43,7 @@ public class ClientManager extends GameObject {
         player.position = new Vector2(0, -800);
         instance.firstDoorOpen = true;
         instance.secondDoorOpen = false;
+        instance.roundStarted = false;
     }
 
     @Override
@@ -81,18 +82,12 @@ public class ClientManager extends GameObject {
 
     @Override
     public void onCollisionEnter(CollisionEvent collider) {
-        if (roundStarted) {
-            return;
-        }
         inReadyArea = true;
         Client.sendMessage("player_entered_ready", getOwnerUUID());
     }
 
     @Override
     public void onCollisionExit(CollisionEvent collider) {
-        if (roundStarted) {
-            return;
-        }
         inReadyArea = false;
         Client.sendMessage("player_left_ready", getOwnerUUID());
     }

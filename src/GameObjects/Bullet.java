@@ -110,6 +110,9 @@ public class Bullet extends GameObject {
             return;
         }
         if (e.getOther().getParent() instanceof Damagable d) {
+            if (d.isDead()) {
+                return;
+            }
             d.takeDamage(damage);
             pierce--;
             if (pierce <= 0) {

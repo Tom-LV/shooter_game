@@ -6,6 +6,8 @@ import Engine.Vector2;
 import GameObjects.GameManagment.ServerManager;
 import GameObjects.Pickups.PickupManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class LootManager extends GameObject {
@@ -14,6 +16,18 @@ public class LootManager extends GameObject {
 
     public LootManager() {
         rng =  new Random();
+    }
+
+    @Override
+    public void setup() {
+        ServerManager.addOnRoundFinishedListener(this::onRoundFinished);
+    }
+
+    void onRoundFinished() {
+        List<GameObject> gameObjects = Server.getServerObjectsOfClass(AmmoLoot.class);
+        for (GameObject gameObject : gameObjects) {
+            Server.removeObject(gameObject);
+        }
     }
 
     @Override
@@ -30,5 +44,10 @@ public class LootManager extends GameObject {
             timer = 0;
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        ServerManager.removeOnRoundFinishedListener(this::onRoundFinished);
     }
 }

@@ -93,6 +93,9 @@ public class Enemy extends GameObject implements Damagable {
 
     @Override
     public void takeDamage(int amount) {
+        if (isDead()) {
+            return;
+        }
         health -= amount;
         if (health <= 0) {
             onKill();
@@ -111,6 +114,15 @@ public class Enemy extends GameObject implements Damagable {
     @Override
     public void onKill() {
         Server.removeObject(this);
+    }
+
+    @Override
+    public boolean isDead() {
+        return health <= 0;
+    }
+
+    @Override
+    public void onDestroy() {
         PickupManager.createPickup(position, "bolt");
     }
 }

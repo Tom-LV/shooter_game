@@ -21,4 +21,6 @@ public interface Damagable {
      * Called when HP reaches 0 or below.
      */
     void onKill();
+
+    boolean isDead();
 }
