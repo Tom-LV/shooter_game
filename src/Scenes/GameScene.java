@@ -36,11 +36,9 @@ public class GameScene extends Scene {
         addObject(new ClientManager(player));
         PickupManager.createPickup(new Vector2(0, -400), "bolt");
 
-
         Server.addObject(new TileMap());
         Server.addObject(new EnemyManager());
         Server.addObject(new LootManager());
         Server.addObject(new ServerManager());
-
     }
 }

@@ -40,6 +40,9 @@ public class Client {
      * @throws Exception failed to connect to server
      */
     public static void connect(String host, int port) throws Exception {
+        if (running) {
+            throw new Exception("Client is already running");
+        }
         socket = new DatagramSocket();
         socket.setSoTimeout(2000);
         clientConnectionData = new ConnectionData(InetAddress.getLocalHost(), port, UUID.randomUUID());

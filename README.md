@@ -36,3 +36,5 @@
   - [X] Double bolts
   - [X] After round, you can't start a new one
   - [ ] collisions for doors with weapons
+  - [ ] Add join and disconnect events
+  - [ ] Fix double gun issues

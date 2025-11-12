@@ -36,6 +36,9 @@ public class Server {
     private static PhysicsManager physicsManager = new PhysicsManager();
 
     public static void start(int port) throws SocketException {
+        if (running) {
+            return;
+        }
         socket = new DatagramSocket(port);
         connections = new ArrayList<>();
         serverConnectionData = new ConnectionData(socket.getInetAddress(), port, UUID.randomUUID());
@@ -68,11 +71,11 @@ public class Server {
                     if (uuidConnectionDataHashMap.containsKey(senderId)) {
                         connectionData = uuidConnectionDataHashMap.get(senderId);
                     } else {
-                        System.out.println(packet.getAddress());
                         connectionData = new ConnectionData(packet.getAddress(), packet.getPort(), senderId);
                         Server.pendingNetworkActions.add(() -> {
                             Server.addNewClient(connectionData);
                         });
+
                     }
                     if (packetId < connectionData.getPackageId()) {
                         continue;
@@ -152,9 +155,13 @@ public class Server {
     }
 
     public static void addNewClient(ConnectionData connection) {
+        if (connections.contains(connection)) {
+            return;
+        }
         if (connections.size() >= playerCount) {
             return;
         }
+        System.out.println(connection.getAddress() + ":" + connection.getPort());
         connections.add(connection);
         uuidConnectionDataHashMap.put(connection.getUUID(), connection);
     }
