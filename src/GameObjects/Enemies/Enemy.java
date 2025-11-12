@@ -5,7 +5,6 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Vector2;
-import GameObjects.Pickups.Pickup;
 import GameObjects.Pickups.PickupManager;
 import GameObjects.Player;
 import Interfaces.Damagable;
@@ -24,6 +23,7 @@ public class Enemy extends GameObject implements Damagable {
     float hitAnim = 0f;
     float attackTimer = 0f;
     Random rng;
+    GameObject followPlayer;
 
     public Enemy(Vector2 position) {
         this.position = position;
@@ -36,6 +36,14 @@ public class Enemy extends GameObject implements Damagable {
         rotation = rng.nextInt(360);
         scale = new Vector2(0.15f, 0.15f);
         addCollider(new CircleCollider(13, ColliderType.Dynamic));
+        if (rng.nextFloat() >= 0.5) {
+            followRandomPlayer();
+        }
+    }
+
+    public void followRandomPlayer() {
+        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
+        followPlayer = playerObjects.get(rng.nextInt(playerObjects.size()));
     }
 
     @Override
@@ -63,21 +71,22 @@ public class Enemy extends GameObject implements Damagable {
         }
 
         if (closestDistance <= 300f) {
-            goToClosestPlayer(deltaTime, closestPlayer, closestDistance);
+            followPlayer = closestPlayer;
         } else {
             rotation += rng.nextFloat(-400.0f, 450.0f) * deltaTime;
             velocity = velocity.add(new Vector2(speed * 0.25f, 0f).rotate(rotation));
         }
 
+        goToPlayer(deltaTime, followPlayer);
         position = position.add(velocity.multiply(deltaTime));
         velocity = new Vector2(0, 0);
     }
 
-    private void goToClosestPlayer(float deltaTime, GameObject player, float distance) {
+    private void goToPlayer(float deltaTime, GameObject player) {
         if (player == null) {
             return;
         }
-
+        float distance = player.position.subtract(position).length();
         rotation = player.position.subtract(position).getRotation();
 
         if (distance < 25f) {
