@@ -17,7 +17,7 @@
   - [ ] Make sure the obstacles are synced
   - [ ] Add enemy spawner generator, that does not put them on top of colliders
   - [ ] Add loot spawner that does not put them on colliders
-- [ ] Rounds
+- [X] Rounds
   - [X] Add a main base(simple rectangle)
   - [X] Add weapon selection
     - [X] Weapons are spawned on the ground
@@ -31,10 +31,10 @@
   - [ ] Players cannot be revived
   - [ ] If all players die, they are sent back to the main base
 - [ ] Fix issues
-  - [ ] Double door spawn
+  - [X] Double door spawn
   - [X] Interact circle doesn't disappear for others when picked up
   - [X] Double bolts
   - [X] After round, you can't start a new one
   - [ ] collisions for doors with weapons
-  - [ ] Add join and disconnect events
-  - [ ] Fix double gun issues
+  - [X] Fix bug with double client joining
+  - [X] Fix double gun issues

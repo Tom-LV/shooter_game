@@ -44,7 +44,7 @@ public class EnemySpawner extends GameObject implements Damagable {
 
         if (ServerManager.isRoundStarted() && time >= rng.nextFloat(5.0f, 10.0f)) {
             for (int i = 0; i < 1; i++) {
-                spawnEnemy();
+                //spawnEnemy();
             }
         }
 

@@ -54,7 +54,7 @@ public class Loot extends GameObject {
 
             float distance = player.position.subtract(position).length();
             if (playerLoot.containsKey(player.getOwnerUUID())) {
-                if (playerLoot.get(player.getOwnerUUID()) == this && distance >= interactRange) {
+                if (playerLoot.get(player.getOwnerUUID()) == this && (distance >= interactRange || !canInteract(player))) {
                     playerLoot.remove(player.getOwnerUUID());
                     Server.sendMessage("hide_indicator", player.getOwnerUUID());
                 }
