@@ -34,7 +34,7 @@ public class GameScene extends Scene {
         addObject(new TileMap());
         addObject(new InteractIndicator());
         addObject(new ClientManager(player));
-        PickupManager.createPickup(new Vector2(0, -400), "bolt");
+        addObject(new BackgroundMusic());
 
         Server.addObject(new TileMap());
         Server.addObject(new EnemyManager());

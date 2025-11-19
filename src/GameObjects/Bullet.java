@@ -33,7 +33,9 @@ public class Bullet extends GameObject {
     public static void shootPistol(Vector2 position, float rotation) {
         Vector2 offset = new Vector2(50f, 7f).rotate(rotation);
         Vector2 bulletPosition = position.add(offset);
-        Server.addObject(new Bullet(bulletPosition, rotation, 20));
+        Bullet bullet = new Bullet(bulletPosition, rotation, 20);
+        bullet.setSprite("bullet");
+        Server.addObject(bullet);
     }
 
     /**
@@ -49,7 +51,9 @@ public class Bullet extends GameObject {
         
         for (int i = 0; i < 8; i++) {
             float randomRotation = rotation + rng.nextFloat(-25.0f, 25.0f);
-            Server.addObject(new Bullet(bulletPosition, randomRotation, 10));
+            Bullet bullet = new Bullet(bulletPosition, randomRotation, 10);
+            bullet.setSprite("bullet");
+            Server.addObject(bullet);
         }
     }
 
@@ -63,7 +67,9 @@ public class Bullet extends GameObject {
         Random rng = new Random();
         Vector2 offset = new Vector2(50f, -6f).rotate(rotation);
         Vector2 bulletPosition = position.add(offset);
-        Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-5.0f, 5.0f), 15));
+        Bullet bullet = new Bullet(bulletPosition, rotation + rng.nextFloat(-5.0f, 5.0f), 15);
+        bullet.setSprite("bullet");
+        Server.addObject(bullet);
     }
 
     @NetEvent("shoot_uzirang")
@@ -71,7 +77,9 @@ public class Bullet extends GameObject {
         Random rng = new Random();
         Vector2 offset = new Vector2(55f, 5f).rotate(rotation);
         Vector2 bulletPosition = position.add(offset);
-        Server.addObject(new Bullet(bulletPosition, rotation + rng.nextFloat(-15.0f, 15.0f), 5));
+        Bullet bullet = new Bullet(bulletPosition, rotation + rng.nextFloat(-15.0f, 15.0f), 5);
+        bullet.setSprite("uzirang_bullet");
+        Server.addObject(bullet);
     }
 
     /**
@@ -88,7 +96,6 @@ public class Bullet extends GameObject {
 
     @Override
     public void setup() {
-        setSprite("bullet");
         scale = new Vector2(0.1f, 0.1f);
         addCollider(new CircleCollider(3, ColliderType.None));
     }

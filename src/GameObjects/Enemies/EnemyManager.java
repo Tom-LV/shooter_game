@@ -24,6 +24,8 @@ public class EnemyManager extends GameObject {
     private void createSpawner() {
         float x = rng.nextFloat(-2000, 2000);
         float y = rng.nextFloat(-2000, 2000);
+        x = Math.round(x / 400) * 400;
+        y = Math.round(y / 400) * 400;
         EnemySpawner enemySpawner = new EnemySpawner(new Vector2(x, y));
         Server.addObject(enemySpawner);
     }

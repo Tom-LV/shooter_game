@@ -5,6 +5,7 @@ import Engine.Networking.Server;
 import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Vector2;
+import GameObjects.GameManagment.ServerManager;
 import GameObjects.Pickups.PickupManager;
 import GameObjects.Player;
 import Interfaces.Damagable;
@@ -16,12 +17,14 @@ import java.util.Random;
  * A basic enemy class.
  */
 public class Enemy extends GameObject implements Damagable {
-    double time = 0;
+    private double time = 0;
     float speed = 150f;
-    Vector2 velocity = new Vector2(0f, 0f);
+    private Vector2 velocity = new Vector2(0f, 0f);
     int health = 20;
-    float hitAnim = 0f;
-    float attackTimer = 0f;
+    private float hitAnim = 0f;
+    private float attackTimer = 0f;
+    float attackTime = 0.5f;
+    float attackRange = 25f;
     Random rng;
     GameObject followPlayer;
 
@@ -29,21 +32,13 @@ public class Enemy extends GameObject implements Damagable {
         this.position = position;
     }
 
-    @Override
-    public void setup() {
-        rng = new Random();
-        setSprite("zombie");
-        rotation = rng.nextInt(360);
-        scale = new Vector2(0.15f, 0.15f);
-        addCollider(new CircleCollider(13, ColliderType.Dynamic));
-        if (rng.nextFloat() >= 0.5) {
-            followRandomPlayer();
-        }
-    }
-
     public void followRandomPlayer() {
         List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
         followPlayer = playerObjects.get(rng.nextInt(playerObjects.size()));
+    }
+
+    void attack(GameObject player) {
+
     }
 
     @Override
@@ -55,7 +50,6 @@ public class Enemy extends GameObject implements Damagable {
             hitAnim -= deltaTime;
         } else {
             scale = new Vector2(0.15f, 0.15f);
-            setSprite("zombie");
         }
 
         List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
@@ -63,6 +57,9 @@ public class Enemy extends GameObject implements Damagable {
         float closestDistance = Float.MAX_VALUE;
         GameObject closestPlayer = null;
         for (GameObject player : playerObjects) {
+            if (ServerManager.isPlayerKilled(player.getOwnerUUID())) {
+                continue;
+            }
             float distance = player.position.subtract(position).length();
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -89,9 +86,9 @@ public class Enemy extends GameObject implements Damagable {
         float distance = player.position.subtract(position).length();
         rotation = player.position.subtract(position).getRotation();
 
-        if (distance < 25f) {
-            if (attackTimer > 0.5f) {
-                Server.sendMessage("player_hit", player.getOwnerUUID(), 10);
+        if (distance < attackRange) {
+            if (attackTimer > attackTime) {
+                attack(player);
                 attackTimer = 0;
             }
         } else {
@@ -117,21 +114,16 @@ public class Enemy extends GameObject implements Damagable {
     public void onDamage(int amount) {
         hitAnim = 0.05f;
         scale = new Vector2(0.14f, 0.14f);
-        setSprite("zombie_hit");
     }
 
     @Override
     public void onKill() {
+        PickupManager.createPickup(position, "bolt");
         Server.removeObject(this);
     }
 
     @Override
     public boolean isDead() {
         return health <= 0;
-    }
-
-    @Override
-    public void onDestroy() {
-        PickupManager.createPickup(position, "bolt");
     }
 }

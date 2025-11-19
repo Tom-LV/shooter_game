@@ -81,7 +81,7 @@ public class GameObject implements Serializable {
     }
 
     public boolean isOfClass(Class<?> cls) {
-        return myClass == cls;
+        return myClass == cls || cls.isAssignableFrom(myClass);
     }
 
     /**

@@ -35,6 +35,13 @@ public class WeaponPickup extends Pickup {
         weaponPickup.weaponIndex = weapon;
     }
 
+    @NetEvent("drop_weapon")
+    public static void weaponDrop(Vector2 position, int weapon) {
+        WeaponManager.dropWeapon();
+        WeaponPickup weaponPickup = new WeaponPickup(position, weapon);
+        Server.addObject(weaponPickup);
+    }
+
     void setWeapon(int weaponIndex) {
         this.weaponIndex = weaponIndex;
         switch (weaponIndex) {

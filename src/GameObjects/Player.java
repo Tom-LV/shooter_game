@@ -130,8 +130,12 @@ public class Player extends GameObject {
         }
         player.health -= damage;
         if (player.getHealth() <= 0) {
+            Client.sendMessage("drop_weapon", player.position, player.selectedWeapon);
+            player.hasWeapon = false;
+            player.selectWeapon(-1);
+            Client.sendMessage("player_killed", Client.getClientId());
             player.health = 100;
-            player.position = new Vector2(0, 0);
+            player.position = new Vector2(0, -800);
             player.invTimer = 1f;
         }
     }

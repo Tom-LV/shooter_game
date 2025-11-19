@@ -5,6 +5,7 @@ import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
 import Engine.Vector2;
 import GameObjects.Enemies.EnemyManager;
+import GameObjects.Loot.LootManager;
 import GameObjects.Pickups.WeaponPickup;
 import GameObjects.WeaponManager;
 
@@ -14,10 +15,12 @@ import java.util.UUID;
 public class ServerManager extends GameObject {
     private boolean roundStarted = false;
     int playersReady = 0;
-    ArrayList<UUID> players = new ArrayList<UUID>();
+    ArrayList<UUID> players = new ArrayList<>();
     boolean ready = false;
     float readyTimer = 0f;
     float roundTimer = 0f;
+
+    ArrayList<UUID> killedPlayers = new ArrayList<>();
 
     static ArrayList<Runnable> onRoundStartedListeners = new ArrayList<>();
     static ArrayList<Runnable> onRoundFinishedListeners = new ArrayList<>();
@@ -43,6 +46,10 @@ public class ServerManager extends GameObject {
         return instance.roundStarted;
     }
 
+    public static boolean isPlayerKilled(UUID uuid) {
+        return instance.killedPlayers.contains(uuid);
+    }
+
     @NetEvent("player_entered_ready")
     public static void playerEnteredReady(UUID client) {
         instance.playersReady++;
@@ -65,6 +72,14 @@ public class ServerManager extends GameObject {
             return;
         }
         instance.sendNotReady();
+    }
+
+    @NetEvent("player_killed")
+    public static void playerKilled(UUID client) {
+        instance.killedPlayers.add(client);
+        if (instance.killedPlayers.size() == Server.getClientCount()) {
+            instance.sendRoundEnded();
+        }
     }
 
     void sendReady() {
@@ -110,6 +125,7 @@ public class ServerManager extends GameObject {
         roundStarted = false;
         ready = false;
         roundTimer = 0f;
+        killedPlayers.clear();
         for (UUID uuid : players) {
             Server.sendMessage("round_ended", uuid);
         }
@@ -122,6 +138,7 @@ public class ServerManager extends GameObject {
             spawnGunSelection();
         }
         EnemyManager.destroyAllEnemies();
+        LootManager.destroyAllLoot();
     }
 
     public static void spawnGunSelection() {

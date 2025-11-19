@@ -30,6 +30,13 @@ public class LootManager extends GameObject {
         }
     }
 
+    public static void destroyAllLoot() {
+        List<GameObject> gameObjects = Server.getServerObjectsOfClass(Loot.class);
+        for (GameObject gameObject : gameObjects) {
+            Server.removeObject(gameObject);
+        }
+    }
+
     @Override
     public void update(float deltaTime) {
         timer += deltaTime;

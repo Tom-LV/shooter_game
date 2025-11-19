@@ -64,9 +64,15 @@ public class EnemySpawner extends GameObject implements Damagable {
 
         float x = position.x + rng.nextFloat(-10, 10);
         float y = position.y + rng.nextFloat(-10, 10);
-        x = Math.round(x/400)*400;
-        y = Math.round(y/400)*400;
-        Enemy enemy = new Enemy(new Vector2(x, y));
+        x = x/400*400;
+        y = y/400*400;
+        Enemy enemy;
+        if (rng.nextFloat() < 0.1f) {
+            enemy = new SentryEnemy(new Vector2(x, y));
+        } else {
+            enemy = new BasicEnemy(new Vector2(x, y));
+        }
+
         Server.addObject(enemy);
         time = 0;
     }

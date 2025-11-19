@@ -66,9 +66,15 @@ public class Main {
         // Other sprites
         Sprite.loadImage("bullet", artAssetPath + "bullet.png",
                 new Vector2(0.85f, 0.5f));
+        Sprite.loadImage("uzirang_bullet", artAssetPath + "uzirang_bullet.png",
+                new Vector2(0.85f, 0.5f));
         Sprite.loadImage("zombie", artAssetPath + "descrom.png",
                 new Vector2(0.3f, 0.5f));
         Sprite.loadImage("zombie_hit", artAssetPath + "descrom_hit.png",
+                new Vector2(0.3f, 0.5f));
+        Sprite.loadImage("descrom_sentry", artAssetPath + "descrom_sentry.png",
+                new Vector2(0.3f, 0.5f));
+        Sprite.loadImage("descrom_sentry_shoot", artAssetPath + "descrom_sentry_shoot.png",
                 new Vector2(0.3f, 0.5f));
 //        Sprite.loadImage("city", artAssetPath + "city.png",
 //                new Vector2(0.5f, 0.5f));

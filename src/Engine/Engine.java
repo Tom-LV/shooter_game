@@ -30,6 +30,10 @@ public class Engine {
     private static final Input input = new Input();
     private static final PhysicsManager physicsManager = new PhysicsManager();
 
+    final static int VIRTUAL_WIDTH = 1920;
+    final static int VIRTUAL_HEIGHT = 1080;
+    final static double targetAspect = (double) VIRTUAL_WIDTH / VIRTUAL_HEIGHT;
+
     /**
      * Setup engine.
      */
@@ -110,6 +114,13 @@ public class Engine {
      * Updates game state.
      */
     public static void update() {
+        int windowWidth = getCurrentScene().getWidth();
+        int windowHeight = getCurrentScene().getHeight();
+        double zoomX = (double) VIRTUAL_WIDTH/ windowWidth;
+        double zoomY = (double) VIRTUAL_HEIGHT / windowHeight;
+
+        Camera.currentCamera.zoom = (float) Math.min(zoomX, zoomY);
+
         Server.update((float) Engine.getDeltaTime());
         Client.update((float) Engine.getDeltaTime());
 
