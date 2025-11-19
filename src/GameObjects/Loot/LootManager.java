@@ -43,9 +43,16 @@ public class LootManager extends GameObject {
         if (ServerManager.isRoundStarted() && timer >= 1f) {
             float x = rng.nextFloat(-1600.0f, 1600.0f);
             float y = rng.nextFloat(-1600.0f, 1600.0f);
+            if (x > -200 && x < 800 && y < -200 && y > -1000) {
+                return;
+            }
             if (rng.nextFloat() >= 0.75f) {
                 PickupManager.createPickup(new Vector2(x, y), "health_pickup");
             } else {
+                List<GameObject> gameObjects = Server.getServerObjectsOfClass(AmmoLoot.class);
+                if (gameObjects.size() >= 15) {
+                    return;
+                }
                 Server.addObject(new AmmoLoot(new Vector2(x, y)));
             }
             timer = 0;

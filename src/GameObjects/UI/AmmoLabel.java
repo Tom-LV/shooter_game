@@ -1,6 +1,7 @@
 package GameObjects.UI;
 
 import Engine.GameObject;
+import Engine.Inputs.Input;
 import Engine.Vector2;
 import GameObjects.Player;
 

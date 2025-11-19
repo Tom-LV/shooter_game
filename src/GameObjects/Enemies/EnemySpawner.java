@@ -18,6 +18,8 @@ public class EnemySpawner extends GameObject implements Damagable {
     private int health = 500;
     float hitAnim = 0f;
 
+    private final Runnable roundStartedListener = this::onRoundStarted;
+
     public EnemySpawner(Vector2 position) {
         this.position = position;
     }
@@ -29,7 +31,7 @@ public class EnemySpawner extends GameObject implements Damagable {
         scale = new Vector2(0.3f, 0.3f);
         setLayer(-99);
         addCollider(new CircleCollider(35, ColliderType.Static));
-        ServerManager.addOnRoundStartedListener(this::onRoundStarted);
+        ServerManager.addOnRoundStartedListener(roundStartedListener);
     }
 
     void onRoundStarted() {
@@ -44,7 +46,7 @@ public class EnemySpawner extends GameObject implements Damagable {
 
         if (ServerManager.isRoundStarted() && time >= rng.nextFloat(5.0f, 10.0f)) {
             for (int i = 0; i < 1; i++) {
-                //spawnEnemy();
+                spawnEnemy();
             }
         }
 
@@ -98,7 +100,7 @@ public class EnemySpawner extends GameObject implements Damagable {
 
     @Override
     public void onKill() {
-        ServerManager.removeOnRoundStartedListener(this::onRoundStarted);
+        ServerManager.removeOnRoundStartedListener(roundStartedListener);
         Server.removeObject(this);
     }
 

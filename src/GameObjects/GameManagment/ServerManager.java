@@ -3,7 +3,10 @@ package GameObjects.GameManagment;
 import Engine.GameObject;
 import Engine.Networking.NetEvent;
 import Engine.Networking.Server;
+import Engine.Physics.ColliderType;
+import Engine.Physics.RectCollider;
 import Engine.Vector2;
+import GameObjects.DoorManager;
 import GameObjects.Enemies.EnemyManager;
 import GameObjects.Loot.LootManager;
 import GameObjects.Pickups.WeaponPickup;
@@ -30,7 +33,10 @@ public class ServerManager extends GameObject {
     }
 
     public static void removeOnRoundStartedListener(Runnable listener) {
+        System.out.println("Removed onRoundStartedListener");
+        System.out.println(onRoundStartedListeners.size());
         onRoundStartedListeners.remove(listener);
+        System.out.println(onRoundStartedListeners.size());
     }
     public static void addOnRoundFinishedListener(Runnable listener) {
         onRoundFinishedListeners.add(listener);
@@ -155,6 +161,12 @@ public class ServerManager extends GameObject {
     @Override
     public void setup() {
         spawnGunSelection();
+
+        DoorManager.DoorPair firstPair = DoorManager.addDoor(100, -803, 167, 90, true, false);
+
+        DoorManager.DoorPair secondPair = DoorManager.addDoor(327, -803, 167, 90, true, false);
+        firstPair.setRotation(90);
+        secondPair.setRotation(190);
     }
 
     @Override

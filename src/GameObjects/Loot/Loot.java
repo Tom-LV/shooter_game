@@ -69,8 +69,17 @@ public class Loot extends GameObject {
     }
 
 
+    @Override
+    public void onDestroy() {
+        List<GameObject> playerObjects = Server.getClientObjectsOfClass(Player.class);
 
+        for (GameObject player : playerObjects) {
+            if (playerLoot.get(player.getOwnerUUID()) == this) {
+                playerLoot.remove(player.getOwnerUUID());
+                Server.sendMessage("hide_indicator", player.getOwnerUUID());
+            }
+        }
 
-
+    }
 }
 

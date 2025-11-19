@@ -2,6 +2,7 @@ package GameObjects;
 
 import java.util.ArrayList;
 import Engine.Engine;
+import Engine.Networking.Server;
 
 public class DoorManager {
     public static class DoorPair {
@@ -29,11 +30,17 @@ public class DoorManager {
 
     static ArrayList<DoorPair> doorPairs = new ArrayList<DoorPair>();
 
-    public static DoorPair addDoor(int x, int y, int width, float rotation, boolean pivotRight) {
+    public static DoorPair addDoor(int x, int y, int width, float rotation, boolean pivotRight, boolean isClient) {
         Door leftDoor = new Door(x, y, width / 2, rotation, !pivotRight);
         Door rightDoor = new Door(x, y, width / 2, -rotation, pivotRight);
-        Engine.addObject(leftDoor);
-        Engine.addObject(rightDoor);
+        if (isClient) {
+            Engine.addObject(leftDoor);
+            Engine.addObject(rightDoor);
+        } else {
+            Server.addObject(leftDoor);
+            Server.addObject(rightDoor);
+        }
+
         return new DoorPair(leftDoor, rightDoor);
     }
 

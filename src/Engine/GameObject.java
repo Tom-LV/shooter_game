@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
-
+import java.util.function.Consumer;
 
 
 /**
@@ -39,6 +39,10 @@ public class GameObject implements Serializable {
     private int frameIndex = 0;
     private Animation currentAnimation;
     private GameObjectType gameObjectType;
+
+    private final Consumer<CollisionEvent> onCollision = this::onCollision;
+    private final Consumer<CollisionEvent> onCollisionEnter= this::onCollisionEnter;
+    private final Consumer<CollisionEvent> onCollisionExit= this::onCollisionExit;
 
     public void setOwnerUUID(UUID uuid) {
         ownerUUID = uuid;
@@ -300,16 +304,16 @@ public class GameObject implements Serializable {
         collider.setParent(this);
         if (gameObjectType == GameObjectType.Server) {
             Server.addCollider(collider);
-            collider.onCollision(this::onCollision);
-            collider.onCollisionEnter(this::onCollisionEnter);
-            collider.onCollisionExit(this::onCollisionExit);
+            collider.onCollision(onCollision);
+            collider.onCollisionEnter(onCollisionEnter);
+            collider.onCollisionExit(onCollisionExit);
         } else if (gameObjectType == GameObjectType.Ghost) {
             Engine.addCollider(collider);
         } else {
             Engine.addCollider(collider);
-            collider.onCollision(this::onCollision);
-            collider.onCollisionEnter(this::onCollisionEnter);
-            collider.onCollisionExit(this::onCollisionExit);
+            collider.onCollision(onCollision);
+            collider.onCollisionEnter(onCollisionEnter);
+            collider.onCollisionExit(onCollisionExit);
         }
     }
 

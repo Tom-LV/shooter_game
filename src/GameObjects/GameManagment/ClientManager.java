@@ -3,12 +3,17 @@ package GameObjects.GameManagment;
 import Engine.GameObject;
 import Engine.Networking.Client;
 import Engine.Networking.NetEvent;
+import Engine.Physics.CircleCollider;
 import Engine.Physics.ColliderType;
 import Engine.Physics.CollisionEvent;
 import Engine.Physics.RectCollider;
 import Engine.Vector2;
+import Engine.Engine;
 import GameObjects.DoorManager;
+import GameObjects.Enemies.EnemySpawner;
 import GameObjects.Player;
+
+import java.util.List;
 
 public class ClientManager extends GameObject {
     static Player player;
@@ -26,6 +31,13 @@ public class ClientManager extends GameObject {
         instance.roundStarted = true;
         instance.secondDoorOpen = true;
         instance.inReadyArea = false;
+        List<GameObject> spawners = Engine.getCurrentScene().getServerObjectOfClass(EnemySpawner.class);
+
+        for (GameObject spawner : spawners) {
+            System.out.println("Added collider");
+            spawner.addCollider(new CircleCollider(35, ColliderType.Static));
+        }
+
     }
 
     @NetEvent("all_ready")
@@ -48,9 +60,9 @@ public class ClientManager extends GameObject {
 
     @Override
     public void setup() {
-        firstPair = DoorManager.addDoor(100, -803, 167, 90, true);
+        firstPair = DoorManager.addDoor(100, -803, 167, 90, true, true);
 
-        secondPair = DoorManager.addDoor(327, -803, 167, 90, true);
+        secondPair = DoorManager.addDoor(327, -803, 167, 90, true, true);
         firstPair.setRotation(225);
         addCollider(new RectCollider(new Vector2(213, 390), new Vector2(0, 0), ColliderType.None));
         position = new Vector2(110, -973);

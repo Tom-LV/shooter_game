@@ -19,7 +19,7 @@ public class SentryEnemy extends Enemy {
         health = 80;
         speed = 75f;
         attackRange = 200f;
-        attackTime = 2f;
+        attackTime = 0.5f;
         rng = new Random();
         setSprite("descrom_sentry");
         rotation = rng.nextInt(360);
