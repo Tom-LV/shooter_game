@@ -56,6 +56,14 @@ public class Player extends GameObject {
         return ammo;
     }
 
+    public void setAmmo(int ammo) {
+        this.ammo =  ammo;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public int getBolts() {
         return bolts;
     }
