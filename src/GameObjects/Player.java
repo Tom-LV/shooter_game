@@ -42,7 +42,7 @@ public class Player extends GameObject {
     float invTimer = 0f;
     String weaponAttackType = "shoot_pistol";
 
-    boolean hasWeapon = false;
+    public boolean hasWeapon = false;
 
     public int getHealth() {
         return health;
@@ -72,7 +72,7 @@ public class Player extends GameObject {
         this.bolts += bolts;
     }
 
-    private void selectWeapon(int index) {
+    public void selectWeapon(int index) {
         selectedWeapon = index;
         stopAnimation();
         switch (index) {

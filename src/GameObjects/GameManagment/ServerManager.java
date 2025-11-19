@@ -140,9 +140,7 @@ public class ServerManager extends GameObject {
         }
 
         WeaponPickup.destroyAllGuns();
-        if (!WeaponManager.isWeaponPickedUp()) {
-            spawnGunSelection();
-        }
+        spawnGunSelection();
         EnemyManager.destroyAllEnemies();
         LootManager.destroyAllLoot();
     }

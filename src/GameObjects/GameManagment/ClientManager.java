@@ -56,6 +56,8 @@ public class ClientManager extends GameObject {
         instance.firstDoorOpen = true;
         instance.secondDoorOpen = false;
         instance.roundStarted = false;
+        player.hasWeapon = false;
+        player.selectWeapon(-1);
         player.setAmmo(150);
         player.setHealth(player.getMaxHealth());
     }
